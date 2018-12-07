@@ -1,0 +1,47 @@
+plugins {
+    id 'java'
+    id 'jacoco'
+}
+
+group 'uk.ashleybye'
+
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.2'
+}
+
+wrapper {
+    gradleVersion = '4.10.2'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jacoco {
+    toolVersion = "0.8.2"
+}
+
+jacocoTestReport {
+    group = "Reporting"
+    reports {
+        xml.enabled true
+        html.enabled true
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules.rule {
+        limit { counter = 'INSTRUCTION'; minimum = 0.90 }
+    }
+}
+
+check.dependsOn jacocoTestReport
+check.dependsOn jacocoTestCoverageVerification
