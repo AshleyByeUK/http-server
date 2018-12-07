@@ -25,7 +25,6 @@ public class HttpConnectionHandler implements ConnectionHandler {
       String incomingData = connection.receiveData();
       ResponseHandler responseHandler = requestHandler.buildRequest(incomingData);
       String outgoingData = responseHandler.serializeResponse();
-//      System.out.println(outgoingData);
       connection.sendData(outgoingData);
       connection.close();
     } catch (IncomingClientConnectionException e) {
