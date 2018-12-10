@@ -7,6 +7,8 @@ before_script:
 script:
   - ./gradlew check
   - ./gradlew test jacocoTestReport
-  - cd acceptance-tests && bundle install && bundle exec spinach && cd ..
+  - ./gradlew jar
+  - java -jar build/http-server.jar &
+  - cd acceptance-tests && bundle install && bundle exec spinach -t @simple-get && cd ..
 after_success:
   - bash <(curl -s https://codecov.io/bash)
