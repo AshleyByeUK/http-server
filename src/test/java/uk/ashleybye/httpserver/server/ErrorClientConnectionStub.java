@@ -11,7 +11,7 @@ public class ErrorClientConnectionStub implements Connection {
     if (receiveDataShouldThrowIncomingClientConnectionException) {
       throw new IncomingClientConnectionException();
     } else {
-      return "";
+      return "GET /simple_get HTTP/1.1";
     }
   }
 

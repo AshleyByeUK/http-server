@@ -1,6 +1,6 @@
 package uk.ashleybye.httpserver.http;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 import uk.ashleybye.httpserver.server.Response;

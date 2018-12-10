@@ -2,8 +2,8 @@ package uk.ashleybye.httpserver;
 
 import java.io.PrintWriter;
 import uk.ashleybye.httpserver.http.HttpConnectionHandler;
-import uk.ashleybye.httpserver.http.HttpRequestParser;
 import uk.ashleybye.httpserver.http.HttpRequestHandler;
+import uk.ashleybye.httpserver.http.HttpRequestParser;
 import uk.ashleybye.httpserver.http.HttpResponseSerializer;
 import uk.ashleybye.httpserver.server.ConnectionHandler;
 import uk.ashleybye.httpserver.server.ConnectionListener;
@@ -24,19 +24,19 @@ public class HttpServer {
     this.errorOut = errorOut;
   }
 
-  public void start() {
-    RequestParser requestParser = new HttpRequestParser();
-    RequestHandler requestHandler = new HttpRequestHandler();
-    ResponseSerializer responseSerializer = new HttpResponseSerializer();
-    ConnectionHandler connectionHandler = new HttpConnectionHandler(requestParser,requestHandler, responseSerializer, errorOut);
-    ConnectionListener listener = new ServerConnectionListener(port, connectionHandler);
-    listener.listenForConnections();
-    listener.stopListeningForConnections();
-  }
-
   public static void main(String[] args) {
     Port port = new ServerPort(5000);
     HttpServer server = new HttpServer(port, new PrintWriter(System.err, true));
     server.start();
+  }
+
+  public void start() {
+    RequestParser requestParser = new HttpRequestParser();
+    ResponseSerializer responseSerializer = new HttpResponseSerializer();
+    RequestHandler requestHandler = new HttpRequestHandler(requestParser, responseSerializer);
+    ConnectionHandler connectionHandler = new HttpConnectionHandler(requestHandler, errorOut);
+    ConnectionListener listener = new ServerConnectionListener(port, connectionHandler);
+    listener.listenForConnections();
+    listener.stopListeningForConnections();
   }
 }
