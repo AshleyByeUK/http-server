@@ -1,12 +1,17 @@
 package uk.ashleybye.httpserver.http;
 
+import uk.ashleybye.httpserver.server.Request;
 import uk.ashleybye.httpserver.server.RequestHandler;
-import uk.ashleybye.httpserver.server.ResponseHandler;
 
 public class HttpRequestHandler implements RequestHandler {
 
   @Override
-  public ResponseHandler buildRequest(String incomingData) {
-    return new HttpResponseHandler();
+  public HttpResponse handle(Request request) {
+    HttpResponse response = new HttpResponse();
+    response.setProtocolVersion(request.getProtocolVersion());
+    response.setStatusCode(200);
+    response.setStatusMessage("OK");
+    response.setBody("");
+    return response;
   }
 }

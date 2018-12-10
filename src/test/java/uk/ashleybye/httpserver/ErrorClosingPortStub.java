@@ -9,7 +9,7 @@ public class ErrorClosingPortStub implements Port {
 
   @Override
   public void listen(ConnectionListener connectionListener) {
-    connectionListener.handleConnection(new ConnectionSpy(""));
+    connectionListener.handleConnection(new ConnectionSpy("GET / HTTP/1.1"));
   }
 
   @Override
