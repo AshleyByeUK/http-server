@@ -1,4 +1,4 @@
-package uk.ashleybye.httpserver.server;
+package uk.ashleybye.httpserver.http;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -6,9 +6,10 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import uk.ashleybye.httpserver.http.HttpRequestHandler;
-import uk.ashleybye.httpserver.http.HttpRequestParser;
-import uk.ashleybye.httpserver.http.HttpResponseSerializer;
+import uk.ashleybye.httpserver.SimpleHttpServerStub;
+import uk.ashleybye.httpserver.server.ConnectionHandler;
+import uk.ashleybye.httpserver.server.ErrorClientConnectionStub;
+import uk.ashleybye.httpserver.server.RequestHandler;
 
 public class HttpConnectionHandlerTest {
 
@@ -19,9 +20,10 @@ public class HttpConnectionHandlerTest {
 
   @BeforeEach
   void setUp() {
-    HttpRequestParser requestParser = new HttpRequestParser();
-    HttpResponseSerializer responseSerializer = new HttpResponseSerializer();
-    requestHandler = new HttpRequestHandler(requestParser, responseSerializer);
+    RequestParser requestParser = new HttpRequestParser();
+    ResponseSerializer responseSerializer = new HttpResponseSerializer();
+    HttpServer server = new SimpleHttpServerStub("GET /simple_get");
+    requestHandler = new HttpRequestHandler(requestParser, responseSerializer, server);
     stdErr = new StringWriter();
     errorOut = new PrintWriter(stdErr);
     connectionWithError = new ErrorClientConnectionStub();

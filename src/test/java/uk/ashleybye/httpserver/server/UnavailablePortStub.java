@@ -11,4 +11,9 @@ public class UnavailablePortStub implements Port {
   public void close() {
     // Do nothing.
   }
+
+  @Override
+  public boolean isContinuingListening() {
+    return true;
+  }
 }
