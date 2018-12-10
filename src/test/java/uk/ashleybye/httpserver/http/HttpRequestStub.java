@@ -1,7 +1,5 @@
 package uk.ashleybye.httpserver.http;
 
-import uk.ashleybye.httpserver.server.Request;
-
 public class HttpRequestStub implements Request {
 
   private final String method;

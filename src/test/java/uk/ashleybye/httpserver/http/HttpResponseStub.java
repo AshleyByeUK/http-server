@@ -1,7 +1,5 @@
 package uk.ashleybye.httpserver.http;
 
-import uk.ashleybye.httpserver.server.Response;
-
 public class HttpResponseStub implements Response {
 
   private final String protocolVersion;

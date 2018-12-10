@@ -1,7 +1,5 @@
 package uk.ashleybye.httpserver.http;
 
-import uk.ashleybye.httpserver.server.RequestParser;
-
 public class HttpRequestParser implements RequestParser {
 
   @Override

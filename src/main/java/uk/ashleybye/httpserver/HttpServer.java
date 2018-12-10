@@ -1,16 +1,16 @@
 package uk.ashleybye.httpserver;
 
 import java.io.PrintWriter;
-import uk.ashleybye.httpserver.http.HttpConnectionHandler;
 import uk.ashleybye.httpserver.http.HttpRequestHandler;
 import uk.ashleybye.httpserver.http.HttpRequestParser;
 import uk.ashleybye.httpserver.http.HttpResponseSerializer;
+import uk.ashleybye.httpserver.http.RequestParser;
+import uk.ashleybye.httpserver.http.ResponseSerializer;
 import uk.ashleybye.httpserver.server.ConnectionHandler;
 import uk.ashleybye.httpserver.server.ConnectionListener;
+import uk.ashleybye.httpserver.server.HttpConnectionHandler;
 import uk.ashleybye.httpserver.server.Port;
 import uk.ashleybye.httpserver.server.RequestHandler;
-import uk.ashleybye.httpserver.server.RequestParser;
-import uk.ashleybye.httpserver.server.ResponseSerializer;
 import uk.ashleybye.httpserver.server.ServerConnectionListener;
 import uk.ashleybye.httpserver.server.ServerPort;
 

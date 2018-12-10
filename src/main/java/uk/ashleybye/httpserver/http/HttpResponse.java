@@ -1,7 +1,5 @@
 package uk.ashleybye.httpserver.http;
 
-import uk.ashleybye.httpserver.server.Response;
-
 public class HttpResponse implements Response {
 
   private String protocolVersion;

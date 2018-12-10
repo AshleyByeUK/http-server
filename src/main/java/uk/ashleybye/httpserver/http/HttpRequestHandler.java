@@ -1,9 +1,6 @@
 package uk.ashleybye.httpserver.http;
 
-import uk.ashleybye.httpserver.server.Request;
 import uk.ashleybye.httpserver.server.RequestHandler;
-import uk.ashleybye.httpserver.server.RequestParser;
-import uk.ashleybye.httpserver.server.ResponseSerializer;
 
 public class HttpRequestHandler implements RequestHandler {
 

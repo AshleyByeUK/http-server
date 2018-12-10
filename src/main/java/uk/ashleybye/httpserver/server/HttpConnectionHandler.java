@@ -1,12 +1,6 @@
-package uk.ashleybye.httpserver.http;
+package uk.ashleybye.httpserver.server;
 
 import java.io.PrintWriter;
-import uk.ashleybye.httpserver.server.ClosingClientConnectionException;
-import uk.ashleybye.httpserver.server.Connection;
-import uk.ashleybye.httpserver.server.ConnectionHandler;
-import uk.ashleybye.httpserver.server.IncomingClientConnectionException;
-import uk.ashleybye.httpserver.server.OutgoingClientConnectionException;
-import uk.ashleybye.httpserver.server.RequestHandler;
 
 public class HttpConnectionHandler implements ConnectionHandler {
 

@@ -1,4 +1,4 @@
-package uk.ashleybye.httpserver.server;
+package uk.ashleybye.httpserver.http;
 
 public interface RequestParser {
 

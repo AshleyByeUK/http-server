@@ -1,7 +1,5 @@
 package uk.ashleybye.httpserver.http;
 
-import uk.ashleybye.httpserver.server.Request;
-
 public class HttpRequest implements Request {
 
   private String method;

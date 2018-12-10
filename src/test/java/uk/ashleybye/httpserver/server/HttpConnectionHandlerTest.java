@@ -6,7 +6,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import uk.ashleybye.httpserver.http.HttpConnectionHandler;
 import uk.ashleybye.httpserver.http.HttpRequestHandler;
 import uk.ashleybye.httpserver.http.HttpRequestParser;
 import uk.ashleybye.httpserver.http.HttpResponseSerializer;
