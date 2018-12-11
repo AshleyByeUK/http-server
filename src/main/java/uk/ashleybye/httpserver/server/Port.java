@@ -2,9 +2,9 @@ package uk.ashleybye.httpserver.server;
 
 public interface Port {
 
-  void listen(ConnectionListener connectionListener);
+  void listen(Server server);
 
   void close();
 
-  boolean isContinuingListening();
+  boolean isClosed();
 }

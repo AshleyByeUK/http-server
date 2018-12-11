@@ -1,38 +1,46 @@
 package uk.ashleybye.httpserver.server;
 
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Deque;
+
 public class PortSpy implements Port {
 
-  private final Connection connection;
-  private boolean listening = false;
-  private int numberOfConnectionsToSimulate = 1;
-  private int numberOfConnectionsSimulated = 0;
+  private final Deque<Connection> connections = new ArrayDeque<>();
+  private static int numberOfTimesListenCalled = 0;
+  private boolean closed = false;
 
-  public PortSpy(Connection connection) {
-    this.connection = connection;
+  public PortSpy(Connection... connections) {
+    this.connections.addAll(Arrays.asList(connections));
   }
 
   @Override
-  public void listen(ConnectionListener connectionListener) {
-    listening = true;
-    numberOfConnectionsSimulated++;
-    connectionListener.handleConnection(connection);
+  public void listen(Server server) {
+    if (connections.size() != 0) {
+      numberOfTimesListenCalled++;
+      server.handleConnection(connections.removeFirst());
+    } else {
+      close();
+    }
   }
 
   @Override
   public void close() {
-    listening = false;
+    if (connections.size() == 0) {
+      closed = true;
+    }
   }
 
   @Override
-  public boolean isContinuingListening() {
-    return numberOfConnectionsSimulated < numberOfConnectionsToSimulate;
+  public boolean isClosed() {
+    return closed;
   }
 
-  public boolean isListening() {
-    return listening;
+  public int getNumberOfTimesListenCalled() {
+    return numberOfTimesListenCalled;
   }
 
-  public void setNumberOfConnectionsToSimulate(int connections) {
-    numberOfConnectionsToSimulate = connections;
+  public void resetNumberOfTimesListenCalled() {
+    numberOfTimesListenCalled = 0;
   }
 }

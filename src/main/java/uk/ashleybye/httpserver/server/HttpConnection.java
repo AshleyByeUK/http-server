@@ -6,11 +6,11 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class ClientConnection implements Connection {
+public class HttpConnection implements Connection {
 
   private final Socket socket;
 
-  public ClientConnection(Socket socket) {
+  public HttpConnection(Socket socket) {
     this.socket = socket;
   }
 
@@ -19,7 +19,7 @@ public class ClientConnection implements Connection {
     try {
       return new BufferedReader(new InputStreamReader(socket.getInputStream())).readLine();
     } catch (IOException e) {
-      throw new IncomingClientConnectionException();
+      throw new IncomingConnectionException();
     }
   }
 
@@ -28,7 +28,7 @@ public class ClientConnection implements Connection {
     try {
       new PrintWriter(socket.getOutputStream(), true).println(data);
     } catch (IOException e) {
-      throw new OutgoingClientConnectionException();
+      throw new OutgoingConnectionException();
     }
   }
 
@@ -37,7 +37,7 @@ public class ClientConnection implements Connection {
     try {
       socket.close();
     } catch (IOException e) {
-      throw new ClosingClientConnectionException();
+      throw new ClosingConnectionException();
     }
   }
 }

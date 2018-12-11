@@ -4,6 +4,7 @@ public class ConnectionSpy implements Connection {
 
   private final String incomingData;
   private String data;
+  private boolean closed = false;
 
   public ConnectionSpy(String incomingData) {
     this.incomingData = incomingData;
@@ -21,10 +22,14 @@ public class ConnectionSpy implements Connection {
 
   @Override
   public void close() {
-
+    closed = true;
   }
 
   public String getSentData() {
     return data;
+  }
+
+  public boolean isClosed() {
+    return closed;
   }
 }

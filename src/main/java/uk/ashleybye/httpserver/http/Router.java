@@ -1,29 +1,29 @@
 package uk.ashleybye.httpserver.http;
 
-import uk.ashleybye.httpserver.server.RequestHandler;
+import java.util.ArrayList;
+import java.util.List;
 
-public class HttpRequestHandler implements RequestHandler {
+public class Router {
 
-  private final RequestParser parser;
-  private final ResponseSerializer serializer;
-  private final HttpServer server;
+  private List<String> routes = new ArrayList<>();
 
-  public HttpRequestHandler(RequestParser parser, ResponseSerializer serializer, HttpServer server) {
-    this.parser = parser;
-    this.serializer = serializer;
-    this.server = server;
+  public Router addRoute(String route) {
+    routes.add(route);
+    return this;
   }
 
-  @Override
-  public String handle(String message) {
-    Request request = parser.parse(message);
+  public boolean hasRoute(String uri) {
+    return routes.contains(uri);
+  }
+
+  public Response route(Request request) {
     Response response = new HttpResponse();
-    if (server.hasRoute(request.getUri())) {
+    if (hasRoute(request.getUri())) {
       handleRequest(request, response);
     } else {
       handleNotFound(request, response);
     }
-    return serializer.serialize(response);
+    return response;
   }
 
   private void handleRequest(Request request, Response response) {
