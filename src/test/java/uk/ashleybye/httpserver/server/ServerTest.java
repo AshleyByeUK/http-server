@@ -6,37 +6,25 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import uk.ashleybye.httpserver.http.HttpMiddleware;
 import uk.ashleybye.httpserver.http.HttpRequestParser;
-import uk.ashleybye.httpserver.http.HttpResponseSerializer;
-import uk.ashleybye.httpserver.http.RequestParser;
-import uk.ashleybye.httpserver.http.ResponseSerializer;
-import uk.ashleybye.httpserver.http.Router;
+import uk.ashleybye.httpserver.http.HttpRouter;
 
 public class ServerTest {
 
   private PortSpy port;
-  private Middleware middleware;
+  private RequestParser parser = new HttpRequestParser();
+  private Router router = new HttpRouter().addRoute("/simple_get");
   private StringWriter stdErr = new StringWriter();
   private PrintWriter errorOut = new PrintWriter(stdErr);
   private ErrorClientConnectionStub connectionWithError = new ErrorClientConnectionStub();
-
-  @BeforeEach
-  void setUp() {
-    RequestParser requestParser = new HttpRequestParser();
-    ResponseSerializer responseSerializer = new HttpResponseSerializer();
-    Router router = new Router().addRoute("/simple_get");
-    middleware = new HttpMiddleware(requestParser, router, responseSerializer);
-  }
 
   @Test
   void testIncomingConnectionExceptionIsHandled() {
     connectionWithError.receiveDataShouldThrowIncomingConnectionException();
     port = new PortSpy(connectionWithError);
 
-    Server server = new Server(port, middleware, errorOut);
+    Server server = new Server(port, parser, router, errorOut);
     server.start();
 
     assertEquals("Could not read data from incoming server\n", stdErr.toString());
@@ -49,7 +37,7 @@ public class ServerTest {
     connectionWithError.sendDataShouldThrowOutgoingConnectionException();
     port = new PortSpy(connectionWithError);
 
-    Server server = new Server(port, middleware, errorOut);
+    Server server = new Server(port, parser, router, errorOut);
     server.start();
 
     assertEquals("Could not write data to outgoing server\n", stdErr.toString());
@@ -62,7 +50,7 @@ public class ServerTest {
     connectionWithError.closeShouldThrowClosingConnectionException();
     port = new PortSpy(connectionWithError);
 
-    Server server = new Server(port, middleware, errorOut);
+    Server server = new Server(port, parser, router, errorOut);
     server.start();
 
     assertEquals("Could not close outgoing server\n", stdErr.toString());
@@ -75,7 +63,7 @@ public class ServerTest {
     UnavailablePortStub port = new UnavailablePortStub();
     PrintWriter errorOut = new PrintWriter(new StringWriter());
 
-    Server server = new Server(port, middleware, errorOut);
+    Server server = new Server(port, parser, router, errorOut);
 
     assertThrows(PortUnavailableException.class, () -> server.start());
 
@@ -87,7 +75,7 @@ public class ServerTest {
     ConnectionSpy connection = new ConnectionSpy("GET /simple_get HTTP/1.1\n\n");
     port = new PortSpy(connection);
 
-    Server server = new Server(port, middleware, errorOut);
+    Server server = new Server(port, parser, router, errorOut);
     server.start();
     server.stop();
 
@@ -99,7 +87,7 @@ public class ServerTest {
   void testErrorClosingPortThrowsClosingServerPortException() {
     ErrorClosingPortStub port = new ErrorClosingPortStub();
 
-    Server server = new Server(port, middleware, errorOut);
+    Server server = new Server(port, parser, router, errorOut);
     server.start();
 
     assertThrows(ClosingPortException.class, () -> server.stop());
@@ -110,7 +98,7 @@ public class ServerTest {
     ConnectionSpy connection = new ConnectionSpy("GET /simple_get HTTP/1.1\n\n");
     port = new PortSpy(connection);
 
-    Server server = new Server(port, middleware, errorOut);
+    Server server = new Server(port, parser, router, errorOut);
     server.start();
 
     assertEquals("HTTP/1.1 200 OK\n", connection.getSentData());
@@ -123,7 +111,7 @@ public class ServerTest {
     ConnectionSpy connection = new ConnectionSpy("GET /not_found_resource HTTP/1.1\n\n");
     port = new PortSpy(connection);
 
-    Server server = new Server(port, middleware, errorOut);
+    Server server = new Server(port, parser, router, errorOut);
     server.start();
 
     assertEquals("HTTP/1.1 404 Not Found\n", connection.getSentData());
@@ -138,7 +126,7 @@ public class ServerTest {
     port = new PortSpy(connectionOne, connectionTwo);
     port.resetNumberOfTimesListenCalled(); // TODO: Remove this line and method once proper multiple connection handling.
 
-    Server server = new Server(port, middleware, errorOut);
+    Server server = new Server(port, parser, router, errorOut);
     server.start();
 
     assertEquals(2, port.getNumberOfTimesListenCalled());

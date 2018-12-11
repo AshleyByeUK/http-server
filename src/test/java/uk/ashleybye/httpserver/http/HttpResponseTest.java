@@ -3,19 +3,18 @@ package uk.ashleybye.httpserver.http;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
+import uk.ashleybye.httpserver.server.Response;
 
-class HttpResponseSerializerTest {
+class HttpResponseTest {
 
   @Test
   void testSerializesSimpleGetRequest() {
     Response response = new HttpResponse();
-    response.setProtocolVersion("HTTP/1.1");
-    response.setStatusCode(200);
-    response.setStatusMessage("OK");
+    response.setProtocolVersion(ProtocolVersion.HTTP_1_1);
+    response.setStatusCode(StatusCode.OK);
     response.setBody("");
 
-    HttpResponseSerializer serializer = new HttpResponseSerializer();
-    String message = serializer.serialize(response);
+    String message = response.serialize();
 
     assertEquals("HTTP/1.1 200 OK\n", message);
   }

@@ -6,8 +6,8 @@ import java.util.Deque;
 
 public class PortSpy implements Port {
 
-  private final Deque<Connection> connections = new ArrayDeque<>();
   private static int numberOfTimesListenCalled = 0;
+  private final Deque<Connection> connections = new ArrayDeque<>();
   private boolean closed = false;
 
   public PortSpy(Connection... connections) {

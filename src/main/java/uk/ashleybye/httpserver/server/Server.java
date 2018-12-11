@@ -8,13 +8,15 @@ import java.util.concurrent.Future;
 public class Server {
 
   private final Port port;
-  private final Middleware handler;
+  private final RequestParser parser;
+  private final Router router;
   private final PrintWriter errorOut;
   private boolean running;
 
-  public Server(Port port, Middleware handler, PrintWriter errorOut) {
+  public Server(Port port, RequestParser parser, Router router, PrintWriter errorOut) {
     this.port = port;
-    this.handler = handler;
+    this.parser = parser;
+    this.router = router;
     this.errorOut = errorOut;
   }
 
@@ -47,11 +49,11 @@ public class Server {
   public void handleConnection(Connection connection) {
     // TODO: will need to keep track of connections here.
     try {
-      String incomingData = connection.receiveData();
-      String outgoingData = handler.processMessage(incomingData);
-      connection.sendData(outgoingData);
+      Request request = parser.parse(connection.receiveData());
+      Response response = router.route(request);
+      connection.sendData(response.serialize());
       connection.close();
-      port.close(); // TODO: processMessage multiple connections properly and remove this line.
+      port.close(); // TODO: handle multiple connections properly and remove this line.
     } catch (IncomingConnectionException e) {
       errorOut.println("Could not read data from incoming server");
     } catch (OutgoingConnectionException e) {

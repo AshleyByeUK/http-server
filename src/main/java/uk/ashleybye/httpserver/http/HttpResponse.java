@@ -1,45 +1,34 @@
 package uk.ashleybye.httpserver.http;
 
+import uk.ashleybye.httpserver.server.Response;
+
 public class HttpResponse implements Response {
 
-  private String protocolVersion;
-  private int statusCode;
-  private String statusMessage;
+  private ProtocolVersion protocolVersion;
+  private StatusCode statusCode;
   private String body;
 
   @Override
-  public String getProtocolVersion() {
-    return protocolVersion;
-  }
-
-  public void setProtocolVersion(String protocolVersion) {
+  public void setProtocolVersion(ProtocolVersion protocolVersion) {
     this.protocolVersion = protocolVersion;
   }
 
   @Override
-  public int getStatusCode() {
-    return statusCode;
-  }
-
-  public void setStatusCode(int statusCode) {
+  public void setStatusCode(StatusCode statusCode) {
     this.statusCode = statusCode;
   }
 
   @Override
-  public String getStatusMessage() {
-    return statusMessage;
-  }
-
-  public void setStatusMessage(String statusMessage) {
-    this.statusMessage = statusMessage;
+  public void setBody(String body) {
+    this.body = body;
   }
 
   @Override
-  public String getBody() {
-    return body;
-  }
-
-  public void setBody(String body) {
-    this.body = body;
+  public String serialize() {
+    return String.format("%s %d %s\n%s",
+        protocolVersion.toString(),
+        statusCode.getStatusCode(),
+        statusCode.getStatusMessage(),
+        body);
   }
 }

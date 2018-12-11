@@ -13,9 +13,29 @@ class HttpRequestParserTest {
 
     HttpRequest request = parser.parse(message);
 
-    assertEquals("GET", request.getMethod());
+    assertEquals(RequestMethod.GET, request.getMethod());
     assertEquals("/simple_get", request.getUri());
-    assertEquals("HTTP/1.1", request.getProtocolVersion());
+    assertEquals(ProtocolVersion.HTTP_1_1, request.getProtocolVersion());
     assertEquals("", request.getBody());
+  }
+
+  @Test
+  void testParsesInvalidMethod() {
+    String message = "INVALID /simple_get HTTP/1.1\n\n";
+    HttpRequestParser parser = new HttpRequestParser();
+
+    HttpRequest request = parser.parse(message);
+
+    assertEquals(RequestMethod.INVALID_METHOD, request.getMethod());
+  }
+
+  @Test
+  void testParsesUnsupportedProtocolVersion() {
+    String message = "GET /simple_get HTTP/0.0\n\n";
+    HttpRequestParser parser = new HttpRequestParser();
+
+    HttpRequest request = parser.parse(message);
+
+    assertEquals(ProtocolVersion.NOT_SUPPORTED, request.getProtocolVersion());
   }
 }

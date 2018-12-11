@@ -1,5 +1,7 @@
 package uk.ashleybye.httpserver.http;
 
+import uk.ashleybye.httpserver.server.RequestParser;
+
 public class HttpRequestParser implements RequestParser {
 
   @Override
@@ -12,10 +14,27 @@ public class HttpRequestParser implements RequestParser {
     String body = headersAndBody.length > 1 ? headersAndBody[1] : "";
 
     HttpRequest request = new HttpRequest();
-    request.setMethod(method);
+    request.setMethod(parseMethod(method));
     request.setUri(uri);
-    request.setProtocolVersion(protocolVersion);
+    request.setProtocolVersion(parseProtocolVersion(protocolVersion));
     request.setBody(body);
     return request;
+  }
+
+  private RequestMethod parseMethod(String method) {
+    switch (method) {
+      case "GET":
+        return RequestMethod.GET;
+      default:
+        return RequestMethod.INVALID_METHOD;
+    }
+  }
+
+  private ProtocolVersion parseProtocolVersion(String protocolVersion) {
+    if (protocolVersion.equals("HTTP/1.1")) {
+      return ProtocolVersion.HTTP_1_1;
+    } else {
+      return ProtocolVersion.NOT_SUPPORTED;
+    }
   }
 }
