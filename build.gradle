@@ -23,14 +23,14 @@ wrapper {
 }
 
 application {
-    mainClassName = 'uk.ashleybye.httpserver.HttpServer'
+    mainClassName = 'uk.ashleybye.httpserver.SimpleHttpServer'
 }
 
 jar {
     manifest {
         attributes(
                 'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
-                'Main-Class': 'uk.ashleybye.httpserver.HttpServer'
+                'Main-Class': 'uk.ashleybye.httpserver.SimpleHttpServer'
         )
     }
     from {
@@ -57,7 +57,7 @@ jacocoTestReport {
 
 jacocoTestCoverageVerification {
     violationRules.rule {
-        limit { counter = 'INSTRUCTION'; minimum = 0.50 }
+        limit { counter = 'INSTRUCTION'; minimum = 0.75 }
     }
 }
 

@@ -17,4 +17,6 @@ public class ServerConnectionListenerTest {
     Connection handledConnection = handler.getHandledConnection();
     assertEquals("incoming data", handledConnection.receiveData());
   }
+
+
 }

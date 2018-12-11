@@ -31,4 +31,9 @@ public class ServerPort implements Port {
       throw new ClosingServerPortException();
     }
   }
+
+  @Override
+  public boolean isContinuingListening() {
+    return true;
+  }
 }

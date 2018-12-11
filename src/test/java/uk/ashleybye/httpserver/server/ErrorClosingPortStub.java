@@ -1,9 +1,4 @@
-package uk.ashleybye.httpserver;
-
-import uk.ashleybye.httpserver.server.ClosingServerPortException;
-import uk.ashleybye.httpserver.server.ConnectionListener;
-import uk.ashleybye.httpserver.server.ConnectionSpy;
-import uk.ashleybye.httpserver.server.Port;
+package uk.ashleybye.httpserver.server;
 
 public class ErrorClosingPortStub implements Port {
 
@@ -15,5 +10,10 @@ public class ErrorClosingPortStub implements Port {
   @Override
   public void close() {
     throw new ClosingServerPortException();
+  }
+
+  @Override
+  public boolean isContinuingListening() {
+    return true;
   }
 }
