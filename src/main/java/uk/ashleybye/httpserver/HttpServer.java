@@ -1,5 +1,9 @@
 package uk.ashleybye.httpserver;
 
+import static uk.ashleybye.httpserver.http.RequestMethod.GET;
+import static uk.ashleybye.httpserver.http.RequestMethod.POST;
+import static uk.ashleybye.httpserver.http.RequestMethod.PUT;
+
 import java.io.PrintWriter;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -7,6 +11,7 @@ import uk.ashleybye.httpserver.http.HttpRequestParser;
 import uk.ashleybye.httpserver.http.RequestMethod;
 import uk.ashleybye.httpserver.http.Router;
 import uk.ashleybye.httpserver.http.controller.GetWithBodyController;
+import uk.ashleybye.httpserver.http.controller.MethodOptionsTwoController;
 import uk.ashleybye.httpserver.http.controller.SimpleGetController;
 import uk.ashleybye.httpserver.http.router.HttpRouter;
 import uk.ashleybye.httpserver.server.HttpPort;
@@ -29,6 +34,8 @@ public class HttpServer {
   private static Router configureRouter() {
     return new HttpRouter()
         .addRoute("/simple_get", new SimpleGetController(), RequestMethod.GET)
-        .addRoute("/get_with_body", new GetWithBodyController(), RequestMethod.GET);
+        .addRoute("/get_with_body", new GetWithBodyController(), RequestMethod.GET)
+        .addRoute("/method_options", new GetWithBodyController(), RequestMethod.GET)
+        .addRoute("/method_options2", new MethodOptionsTwoController(), GET, PUT, POST);
   }
 }

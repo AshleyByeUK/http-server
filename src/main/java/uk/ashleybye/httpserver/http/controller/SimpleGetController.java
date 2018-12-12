@@ -13,11 +13,4 @@ public class SimpleGetController implements Controller {
     response.setStatusCode(StatusCode.OK);
     response.setBody("");
   }
-
-  @Override
-  public void head(Request request, Response response) {
-    response.setProtocolVersion(request.getProtocolVersion());
-    response.setStatusCode(StatusCode.OK);
-    response.setBody("");
-  }
 }

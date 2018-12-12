@@ -6,6 +6,4 @@ import uk.ashleybye.httpserver.server.Response;
 public interface Controller {
 
   void get(Request request, Response response);
-
-  void head(Request request, Response response);
 }
