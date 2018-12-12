@@ -4,14 +4,14 @@ public enum ProtocolVersion {
   HTTP_1_1("HTTP/1.1"),
   NOT_SUPPORTED("HTTP version not supported");
 
-  private String protocolVersion;
+  private String version;
 
-  ProtocolVersion(String protocolVersion) {
-    this.protocolVersion = protocolVersion;
+  ProtocolVersion(String version) {
+    this.version = version;
   }
 
   @Override
   public String toString() {
-    return protocolVersion;
+    return version;
   }
 }

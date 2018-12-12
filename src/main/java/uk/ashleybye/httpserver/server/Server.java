@@ -25,7 +25,7 @@ public class Server {
     this.port.listen();
     running = true;
     while (running) {
-      executor.execute(new ConnectionThread(this.port.acceptConnection()));
+      executor.execute(new ConnectionRunnable(this.port.acceptConnection()));
     }
   }
 
@@ -34,12 +34,11 @@ public class Server {
     running = false;
   }
 
-  private class ConnectionThread extends Thread {
+  private class ConnectionRunnable implements Runnable {
 
     private final Connection connection;
 
-    ConnectionThread(Connection connection) {
-      super("ConnectionThread");
+    ConnectionRunnable(Connection connection) {
       this.connection = connection;
     }
 
