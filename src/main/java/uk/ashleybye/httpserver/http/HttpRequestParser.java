@@ -23,6 +23,8 @@ public class HttpRequestParser implements RequestParser {
 
   private RequestMethod parseMethod(String method) {
     switch (method) {
+      case "HEAD":
+        return RequestMethod.HEAD;
       case "GET":
         return RequestMethod.GET;
       default:

@@ -13,27 +13,30 @@ public class HttpPort implements Port {
     this.port = port;
   }
 
-  public void listen(Server server) {
+  public void listen() {
     try {
       serverSocket = new ServerSocket(port);
-      Socket socket = serverSocket.accept();
-      server.handleConnection(new HttpConnection(socket));
     } catch (IOException e) {
       throw new PortUnavailableException();
     }
   }
 
   @Override
-  public void close() { // TODO: Set closed to true once proper multiple client handling implemented.
+  public Connection acceptConnection() {
+    try {
+      Socket socket = serverSocket.accept();
+      return new HttpConnection(socket);
+    } catch (IOException e) {
+      throw new PortUnavailableException();
+    }
+  }
+
+  @Override
+  public void close() {
     try {
       serverSocket.close();
     } catch (IOException e) {
       throw new ClosingPortException();
     }
-  }
-
-  @Override
-  public boolean isClosed() {
-    return false;
   }
 }

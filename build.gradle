@@ -43,6 +43,15 @@ test {
     useJUnitPlatform()
 }
 
+task acceptanceTests {
+    doLast {
+        exec {
+            workingDir 'acceptance-tests'
+            commandLine 'bundle', 'exec', 'spinach', '-t', '@simple-get,@not-found'
+        }
+    }
+}
+
 jacoco {
     toolVersion = "0.8.2"
 }

@@ -1,70 +1,62 @@
 package uk.ashleybye.httpserver.server;
 
 import java.io.PrintWriter;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.Executor;
+import uk.ashleybye.httpserver.http.Router;
 
 public class Server {
 
-  private final Port port;
   private final RequestParser parser;
   private final Router router;
   private final PrintWriter errorOut;
+  private final Executor executor;
+  private Port port;
   private boolean running;
 
-  public Server(Port port, RequestParser parser, Router router, PrintWriter errorOut) {
-    this.port = port;
+  public Server(RequestParser parser, Router router, PrintWriter errorOut, Executor executor) {
     this.parser = parser;
     this.router = router;
     this.errorOut = errorOut;
+    this.executor = executor;
   }
 
-  public void start() {
-    try {
-      serverTask().get();
-    } catch (Exception e) {
-      String exception = e.getCause().toString();
-      if (exception.equals(PortUnavailableException.class.getCanonicalName())) {
-        throw new PortUnavailableException();
-      }
-    }
-  }
-
-  private Future<Void> serverTask() {
-    ExecutorService executorService = Executors.newSingleThreadExecutor();
-    return executorService.submit(() -> {
-      listen();
-      return null;
-    });
-  }
-
-  private void listen() {
+  public void start(Port port) {
+    this.port = port;
+    this.port.listen();
     running = true;
-    while (!port.isClosed()) { // TODO: use running field once proper multiple connection handling implemented.
-      port.listen(this);
-    }
-  }
-
-  public void handleConnection(Connection connection) {
-    // TODO: will need to keep track of connections here.
-    try {
-      Request request = parser.parse(connection.receiveData());
-      Response response = router.route(request);
-      connection.sendData(response.serialize());
-      connection.close();
-      port.close(); // TODO: handle multiple connections properly and remove this line.
-    } catch (IncomingConnectionException e) {
-      errorOut.println("Could not read data from incoming server");
-    } catch (OutgoingConnectionException e) {
-      errorOut.println("Could not write data to outgoing server");
-    } catch (ClosingConnectionException e) {
-      errorOut.println("Could not close outgoing server");
+    while (running) {
+      executor.execute(new ConnectionThread(this.port.acceptConnection()));
     }
   }
 
   public void stop() {
-    port.close(); // TODO: multiple connection handling will need to close all connections here.
+    port.close();
     running = false;
+  }
+
+  private class ConnectionThread extends Thread {
+
+    private final Connection connection;
+
+    ConnectionThread(Connection connection) {
+      super("ConnectionThread");
+      this.connection = connection;
+    }
+
+    @Override
+    public void run() {
+      try {
+        Request request = parser.parse(connection.receiveData());
+        Response response = router.route(request);
+        connection.sendData(response.serialize());
+        connection.close();
+      } catch (IncomingConnectionException e) {
+        errorOut.println("Could not read data from incoming connection");
+      } catch (OutgoingConnectionException e) {
+        errorOut.println("Could not write data to outgoing connection");
+      } catch (ClosingConnectionException e) {
+        errorOut.println("Could not close connection");
+      }
+    }
   }
 }

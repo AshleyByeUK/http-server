@@ -29,6 +29,6 @@ public class HttpResponse implements Response {
         protocolVersion.toString(),
         statusCode.getStatusCode(),
         statusCode.getStatusMessage(),
-        body);
+        body.isEmpty() ? body : "\n" + body);
   }
 }

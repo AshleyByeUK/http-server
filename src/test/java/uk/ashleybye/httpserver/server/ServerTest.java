@@ -3,80 +3,80 @@ package uk.ashleybye.httpserver.server;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static uk.ashleybye.httpserver.http.RequestMethod.GET;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.concurrent.Executor;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.ashleybye.httpserver.http.HttpRequestParser;
-import uk.ashleybye.httpserver.http.HttpRouter;
+import uk.ashleybye.httpserver.http.Router;
+import uk.ashleybye.httpserver.http.controller.GetWithBodyController;
+import uk.ashleybye.httpserver.http.controller.SimpleGetController;
+import uk.ashleybye.httpserver.http.router.HttpRouter;
 
 public class ServerTest {
 
   private PortSpy port;
-  private RequestParser parser = new HttpRequestParser();
-  private Router router = new HttpRouter().addRoute("/simple_get");
   private StringWriter stdErr = new StringWriter();
-  private PrintWriter errorOut = new PrintWriter(stdErr);
   private ErrorClientConnectionStub connectionWithError = new ErrorClientConnectionStub();
+  private Server server;
+
+  @BeforeEach
+  void setUp() {
+    RequestParser parser = new HttpRequestParser();
+    Router router = new HttpRouter()
+        .addRoute("/simple_get", new SimpleGetController(), GET)
+        .addRoute("/get_with_body", new GetWithBodyController(), GET);
+    PrintWriter errorOut = new PrintWriter(stdErr);
+    Executor executor = Runnable::run;
+    server = new Server(parser, router, errorOut, executor);
+  }
 
   @Test
   void testIncomingConnectionExceptionIsHandled() {
     connectionWithError.receiveDataShouldThrowIncomingConnectionException();
-    port = new PortSpy(connectionWithError);
+    port = new PortSpy(server, connectionWithError);
 
-    Server server = new Server(port, parser, router, errorOut);
-    server.start();
+    server.start(port);
 
-    assertEquals("Could not read data from incoming server\n", stdErr.toString());
-
-    server.stop();
+    assertEquals("Could not read data from incoming connection\n", stdErr.toString());
   }
 
   @Test
   void testOutgoingConnectionExceptionIsHandled() {
+    port = new PortSpy(server, connectionWithError);
     connectionWithError.sendDataShouldThrowOutgoingConnectionException();
-    port = new PortSpy(connectionWithError);
 
-    Server server = new Server(port, parser, router, errorOut);
-    server.start();
+    server.start(port);
 
-    assertEquals("Could not write data to outgoing server\n", stdErr.toString());
-
-    server.stop();
+    assertEquals("Could not write data to outgoing connection\n", stdErr.toString());
   }
 
   @Test
   void testClosingConnectionExceptionIsHandled() {
+    port = new PortSpy(server, connectionWithError);
     connectionWithError.closeShouldThrowClosingConnectionException();
-    port = new PortSpy(connectionWithError);
 
-    Server server = new Server(port, parser, router, errorOut);
-    server.start();
+    server.start(port);
 
-    assertEquals("Could not close outgoing server\n", stdErr.toString());
-
-    server.stop();
+    assertEquals("Could not close connection\n", stdErr.toString());
   }
 
   @Test
   void testUnavailablePortThrowsPortUnavailableException() {
     UnavailablePortStub port = new UnavailablePortStub();
-    PrintWriter errorOut = new PrintWriter(new StringWriter());
 
-    Server server = new Server(port, parser, router, errorOut);
-
-    assertThrows(PortUnavailableException.class, () -> server.start());
-
-    server.stop();
+    assertThrows(PortUnavailableException.class, () -> server.start(port));
   }
 
   @Test
   void testCanStartAndStopServer() {
     ConnectionSpy connection = new ConnectionSpy("GET /simple_get HTTP/1.1\n\n");
-    port = new PortSpy(connection);
+    port = new PortSpy(server, connection);
 
-    Server server = new Server(port, parser, router, errorOut);
-    server.start();
+    server.start(port);
     server.stop();
 
     assertTrue(port.isClosed());
@@ -85,54 +85,61 @@ public class ServerTest {
 
   @Test
   void testErrorClosingPortThrowsClosingServerPortException() {
-    ErrorClosingPortStub port = new ErrorClosingPortStub();
+    ErrorClosingPortStub port = new ErrorClosingPortStub(server);
 
-    Server server = new Server(port, parser, router, errorOut);
-    server.start();
-
-    assertThrows(ClosingPortException.class, () -> server.stop());
+    assertThrows(ClosingPortException.class, () -> server.start(port));
   }
 
   @Test
   void testGetRequestWithEmptyBody() {
     ConnectionSpy connection = new ConnectionSpy("GET /simple_get HTTP/1.1\n\n");
-    port = new PortSpy(connection);
+    port = new PortSpy(server, connection);
 
-    Server server = new Server(port, parser, router, errorOut);
-    server.start();
+    server.start(port);
 
     assertEquals("HTTP/1.1 200 OK\n", connection.getSentData());
+  }
 
-    server.stop();
+  @Test
+  void testGetRequestWithBody() {
+    ConnectionSpy connection = new ConnectionSpy("GET /get_with_body HTTP/1.1\n\n");
+    port = new PortSpy(server, connection);
+
+    server.start(port);
+
+    assertEquals("HTTP/1.1 200 OK\n\nbody", connection.getSentData());
+  }
+
+  @Test
+  void testHeadRequestForResourceWithBody() {
+    ConnectionSpy connection = new ConnectionSpy("HEAD /get_with_body HTTP/1.1\n\n");
+    port = new PortSpy(server, connection);
+
+    server.start(port);
+
+    assertEquals("HTTP/1.1 200 OK\n", connection.getSentData());
   }
 
   @Test
   void testResourceNotFound() {
     ConnectionSpy connection = new ConnectionSpy("GET /not_found_resource HTTP/1.1\n\n");
-    port = new PortSpy(connection);
+    port = new PortSpy(server, connection);
 
-    Server server = new Server(port, parser, router, errorOut);
-    server.start();
+    server.start(port);
 
     assertEquals("HTTP/1.1 404 Not Found\n", connection.getSentData());
-
-    server.stop();
   }
 
   @Test
   void testServesMultipleRequests() {
     ConnectionSpy connectionOne = new ConnectionSpy("GET /not_found_resource HTTP/1.1\n\n");
     ConnectionSpy connectionTwo = new ConnectionSpy("GET /not_found_resource HTTP/1.1\n\n");
-    port = new PortSpy(connectionOne, connectionTwo);
-    port.resetNumberOfTimesListenCalled(); // TODO: Remove this line and method once proper multiple connection handling.
+    port = new PortSpy(server, connectionOne, connectionTwo);
 
-    Server server = new Server(port, parser, router, errorOut);
-    server.start();
+    server.start(port);
 
-    assertEquals(2, port.getNumberOfTimesListenCalled());
+    assertEquals(2, port.getNumberOfTimesAcceptConnectionCalled());
     assertTrue(connectionOne.isClosed());
     assertTrue(connectionTwo.isClosed());
-
-    server.stop();
   }
 }

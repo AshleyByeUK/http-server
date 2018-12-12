@@ -6,41 +6,41 @@ import java.util.Deque;
 
 public class PortSpy implements Port {
 
-  private static int numberOfTimesListenCalled = 0;
   private final Deque<Connection> connections = new ArrayDeque<>();
+  private final Server server;
+  private int numberOfTimesAcceptConnectionCalled = 0;
   private boolean closed = false;
 
-  public PortSpy(Connection... connections) {
+  public PortSpy(Server server, Connection... connections) {
+    this.server = server;
     this.connections.addAll(Arrays.asList(connections));
   }
 
   @Override
-  public void listen(Server server) {
-    if (connections.size() != 0) {
-      numberOfTimesListenCalled++;
-      server.handleConnection(connections.removeFirst());
-    } else {
-      close();
+  public void listen() {
+    // Do nothing.
+  }
+
+  @Override
+  public Connection acceptConnection() {
+    if (connections.size() == 1) {
+      server.stop();
     }
+
+    numberOfTimesAcceptConnectionCalled++;
+    return connections.removeFirst();
   }
 
   @Override
   public void close() {
-    if (connections.size() == 0) {
-      closed = true;
-    }
+    closed = true;
   }
 
-  @Override
   public boolean isClosed() {
     return closed;
   }
 
-  public int getNumberOfTimesListenCalled() {
-    return numberOfTimesListenCalled;
-  }
-
-  public void resetNumberOfTimesListenCalled() {
-    numberOfTimesListenCalled = 0;
+  public int getNumberOfTimesAcceptConnectionCalled() {
+    return numberOfTimesAcceptConnectionCalled;
   }
 }
