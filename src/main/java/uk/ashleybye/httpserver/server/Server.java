@@ -1,26 +1,61 @@
 package uk.ashleybye.httpserver.server;
 
-public abstract class Server {
+import java.io.PrintWriter;
+import java.util.concurrent.Executor;
+import uk.ashleybye.httpserver.http.Router;
 
-  protected final Port port;
-  protected ConnectionHandler connectionHandler;
+public class Server {
 
-  public Server(Port port) {
-    this.port = port;
+  private final RequestParser parser;
+  private final Router router;
+  private final PrintWriter errorOut;
+  private final Executor executor;
+  private Port port;
+  private boolean running;
+
+  public Server(RequestParser parser, Router router, PrintWriter errorOut, Executor executor) {
+    this.parser = parser;
+    this.router = router;
+    this.errorOut = errorOut;
+    this.executor = executor;
   }
 
-  public void start() {
-    configure();
-    while (running()) {
-      ConnectionListener listener = new ServerConnectionListener(port, connectionHandler);
-      listener.listenForConnections();
-      listener.stopListeningForConnections();
+  public void start(Port port) {
+    this.port = port;
+    this.port.listen();
+    running = true;
+    while (running) {
+      executor.execute(new ConnectionRunnable(this.port.acceptConnection()));
     }
   }
 
-  protected abstract void configure();
+  public void stop() {
+    port.close();
+    running = false;
+  }
 
-  private boolean running() {
-    return port.isContinuingListening();
+  private class ConnectionRunnable implements Runnable {
+
+    private final Connection connection;
+
+    ConnectionRunnable(Connection connection) {
+      this.connection = connection;
+    }
+
+    @Override
+    public void run() {
+      try {
+        Request request = parser.parse(connection.receiveData());
+        Response response = router.route(request);
+        connection.sendData(response.serialize());
+        connection.close();
+      } catch (IncomingConnectionException e) {
+        errorOut.println("Could not read data from incoming connection");
+      } catch (OutgoingConnectionException e) {
+        errorOut.println("Could not write data to outgoing connection");
+      } catch (ClosingConnectionException e) {
+        errorOut.println("Could not close connection");
+      }
+    }
   }
 }

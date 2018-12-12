@@ -4,20 +4,28 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class ServerPort implements Port {
+public class HttpPort implements Port {
 
   private int port;
   private ServerSocket serverSocket;
 
-  public ServerPort(int port) {
+  public HttpPort(int port) {
     this.port = port;
   }
 
-  public void listen(ConnectionListener connectionListener) {
+  public void listen() {
     try {
       serverSocket = new ServerSocket(port);
+    } catch (IOException e) {
+      throw new PortUnavailableException();
+    }
+  }
+
+  @Override
+  public Connection acceptConnection() {
+    try {
       Socket socket = serverSocket.accept();
-      connectionListener.handleConnection(new ClientConnection(socket));
+      return new HttpConnection(socket);
     } catch (IOException e) {
       throw new PortUnavailableException();
     }
@@ -28,12 +36,7 @@ public class ServerPort implements Port {
     try {
       serverSocket.close();
     } catch (IOException e) {
-      throw new ClosingServerPortException();
+      throw new ClosingPortException();
     }
-  }
-
-  @Override
-  public boolean isContinuingListening() {
-    return true;
   }
 }

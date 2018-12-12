@@ -2,18 +2,25 @@ package uk.ashleybye.httpserver.server;
 
 public class ErrorClosingPortStub implements Port {
 
+  private final Server server;
+
+  public ErrorClosingPortStub(Server server) {
+    this.server = server;
+  }
+
   @Override
-  public void listen(ConnectionListener connectionListener) {
-    connectionListener.handleConnection(new ConnectionSpy("GET / HTTP/1.1"));
+  public void listen() {
+    // Do nothing.
+  }
+
+  @Override
+  public Connection acceptConnection() {
+    server.stop();
+    return new ConnectionSpy("GET / HTTP/1.1");
   }
 
   @Override
   public void close() {
-    throw new ClosingServerPortException();
-  }
-
-  @Override
-  public boolean isContinuingListening() {
-    return true;
+    throw new ClosingPortException();
   }
 }

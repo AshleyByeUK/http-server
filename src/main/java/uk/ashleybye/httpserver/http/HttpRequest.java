@@ -1,18 +1,20 @@
 package uk.ashleybye.httpserver.http;
 
+import uk.ashleybye.httpserver.server.Request;
+
 public class HttpRequest implements Request {
 
-  private String method;
+  private RequestMethod method;
   private String uri;
-  private String protocolVersion;
+  private ProtocolVersion protocolVersion;
   private String body;
 
   @Override
-  public String getMethod() {
+  public RequestMethod getMethod() {
     return method;
   }
 
-  public void setMethod(String method) {
+  public void setMethod(RequestMethod method) {
     this.method = method;
   }
 
@@ -26,11 +28,11 @@ public class HttpRequest implements Request {
   }
 
   @Override
-  public String getProtocolVersion() {
+  public ProtocolVersion getProtocolVersion() {
     return protocolVersion;
   }
 
-  public void setProtocolVersion(String protocolVersion) {
+  public void setProtocolVersion(ProtocolVersion protocolVersion) {
     this.protocolVersion = protocolVersion;
   }
 

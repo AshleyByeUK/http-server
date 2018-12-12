@@ -3,17 +3,17 @@ package uk.ashleybye.httpserver.server;
 public class UnavailablePortStub implements Port {
 
   @Override
-  public void listen(ConnectionListener connectionListener) {
+  public void listen() {
     throw new PortUnavailableException();
+  }
+
+  @Override
+  public Connection acceptConnection() {
+    return null;
   }
 
   @Override
   public void close() {
     // Do nothing.
-  }
-
-  @Override
-  public boolean isContinuingListening() {
-    return true;
   }
 }

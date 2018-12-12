@@ -23,14 +23,14 @@ wrapper {
 }
 
 application {
-    mainClassName = 'uk.ashleybye.httpserver.SimpleHttpServer'
+    mainClassName = 'uk.ashleybye.httpserver.HttpServer'
 }
 
 jar {
     manifest {
         attributes(
                 'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
-                'Main-Class': 'uk.ashleybye.httpserver.SimpleHttpServer'
+                'Main-Class': 'uk.ashleybye.httpserver.HttpServer'
         )
     }
     from {
@@ -41,6 +41,15 @@ jar {
 
 test {
     useJUnitPlatform()
+}
+
+task acceptanceTests {
+    doLast {
+        exec {
+            workingDir 'acceptance-tests'
+            commandLine 'bundle', 'exec', 'spinach', '-t', '@simple-get,@not-found'
+        }
+    }
 }
 
 jacoco {
