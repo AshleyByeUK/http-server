@@ -9,6 +9,8 @@ public interface Response {
 
   void setStatusCode(StatusCode statusCode);
 
+  void addHeader(String key, String value);
+
   void setBody(String body);
 
   String serialize();

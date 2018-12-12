@@ -3,7 +3,7 @@ package uk.ashleybye.httpserver.server;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static uk.ashleybye.httpserver.http.RequestMethod.GET;
+import static uk.ashleybye.httpserver.http.RequestMethod.*;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -13,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import uk.ashleybye.httpserver.http.HttpRequestParser;
 import uk.ashleybye.httpserver.http.Router;
 import uk.ashleybye.httpserver.http.controller.GetWithBodyController;
+import uk.ashleybye.httpserver.http.controller.MethodOptionsController;
+import uk.ashleybye.httpserver.http.controller.MethodOptionsTwoController;
 import uk.ashleybye.httpserver.http.controller.SimpleGetController;
 import uk.ashleybye.httpserver.http.router.HttpRouter;
 
@@ -28,7 +30,9 @@ public class ServerTest {
     RequestParser parser = new HttpRequestParser();
     Router router = new HttpRouter()
         .addRoute("/simple_get", new SimpleGetController(), GET)
-        .addRoute("/get_with_body", new GetWithBodyController(), GET);
+        .addRoute("/get_with_body", new GetWithBodyController(), GET)
+        .addRoute("/method_options", new MethodOptionsController(), GET)
+        .addRoute("/method_options2", new MethodOptionsTwoController(), GET, PUT, POST);
     PrintWriter errorOut = new PrintWriter(stdErr);
     Executor executor = Runnable::run;
     server = new Server(parser, router, errorOut, executor);
@@ -118,6 +122,26 @@ public class ServerTest {
     server.start(port);
 
     assertEquals("HTTP/1.1 200 OK\n", connection.getSentData());
+  }
+
+  @Test
+  void testOptionsRequestForResourceWithOnlyGet() {
+    ConnectionSpy connection = new ConnectionSpy("OPTIONS /method_options HTTP/1.1\n\n");
+    port = new PortSpy(server, connection);
+
+    server.start(port);
+
+    assertEquals("HTTP/1.1 200 OK\nAllow: GET,HEAD,OPTIONS\n", connection.getSentData());
+  }
+
+  @Test
+  void testOptionsRequestForResourceWithMultipleMethods() {
+    ConnectionSpy connection = new ConnectionSpy("OPTIONS /method_options2 HTTP/1.1\n\n");
+    port = new PortSpy(server, connection);
+
+    server.start(port);
+
+    assertEquals("HTTP/1.1 200 OK\nAllow: GET,PUT,POST,HEAD,OPTIONS\n", connection.getSentData());
   }
 
   @Test
