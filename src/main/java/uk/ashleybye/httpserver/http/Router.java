@@ -6,7 +6,7 @@ import uk.ashleybye.httpserver.server.Response;
 
 public interface Router {
 
-  Router addRoute(String uri, Controller controller, RequestMethod... allowedMethods);
+  Router addRoute(String uri, Controller controller);
 
   Response route(Request request);
 }

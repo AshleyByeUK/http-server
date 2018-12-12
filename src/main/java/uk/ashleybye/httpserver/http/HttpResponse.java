@@ -48,7 +48,7 @@ public class HttpResponse implements Response {
   private String serializedHeaders() {
     String string = "";
     for (String key : headers.keySet()) {
-      string += String.format("%s: %s\n", key, headers.get(key));
+      string += String.format("%s: %s%n", key, headers.get(key));
     }
     return string;
   }
