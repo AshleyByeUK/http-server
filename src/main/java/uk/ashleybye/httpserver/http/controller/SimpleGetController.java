@@ -5,7 +5,7 @@ import uk.ashleybye.httpserver.http.StatusCode;
 import uk.ashleybye.httpserver.server.Request;
 import uk.ashleybye.httpserver.server.Response;
 
-public class SimpleGetController extends Controller {
+public class SimpleGetController extends HttpController {
 
   public SimpleGetController(RequestMethod... allowedMethods) {
     super(allowedMethods);

@@ -1,8 +1,11 @@
-package uk.ashleybye.httpserver.http;
+package uk.ashleybye.httpserver.http.request;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import uk.ashleybye.httpserver.http.ProtocolVersion;
+import uk.ashleybye.httpserver.http.RequestMethod;
 import uk.ashleybye.httpserver.server.Request;
 import uk.ashleybye.httpserver.server.Response;
 
@@ -21,9 +24,9 @@ class HttpRequestParserTest {
 
     Request request = parser.parse(message);
 
-    assertEquals(RequestMethod.HEAD, request.getMethod());
+    Assertions.assertEquals(RequestMethod.HEAD, request.getMethod());
     assertEquals("/head", request.getUri());
-    assertEquals(ProtocolVersion.HTTP_1_1, request.getProtocolVersion());
+    Assertions.assertEquals(ProtocolVersion.HTTP_1_1, request.getProtocolVersion());
     assertEquals("", request.getBody());
   }
 

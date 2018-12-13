@@ -5,21 +5,22 @@ import java.util.Arrays;
 import java.util.List;
 import uk.ashleybye.httpserver.http.RequestMethod;
 import uk.ashleybye.httpserver.http.StatusCode;
+import uk.ashleybye.httpserver.server.Controller;
 import uk.ashleybye.httpserver.server.Request;
 import uk.ashleybye.httpserver.server.Response;
 
-public abstract class Controller {
+public abstract class HttpController implements Controller {
 
   private final List<RequestMethod> allowedMethods;
 
-  public Controller(RequestMethod... allowedMethods) {
+  public HttpController(RequestMethod... allowedMethods) {
     this.allowedMethods = new ArrayList<>(Arrays.asList(allowedMethods));
     this.allowedMethods.add(RequestMethod.HEAD);
     this.allowedMethods.add(RequestMethod.OPTIONS);
   }
 
-  public static Controller routeNotFoundController() {
-    return new Controller() {
+  public static HttpController routeNotFoundController() {
+    return new HttpController() {
       @Override
       public void head(Request request, Response response) {
         buildNotFoundResponse(request, response);
@@ -48,20 +49,24 @@ public abstract class Controller {
     };
   }
 
+  @Override
   public void head(Request request, Response response) {
     response.setProtocolVersion(request.getProtocolVersion());
     response.setStatusCode(StatusCode.OK);
     response.setBody("");
   }
 
+  @Override
   public void options(Request request, Response response) {
     generateResponseWithAllowedMethods(StatusCode.OK, request, response);
   }
 
+  @Override
   public void get(Request request, Response response) {
     generateResponseWithAllowedMethods(StatusCode.METHOD_NOT_ALLOWED, request, response);
   }
 
+  @Override
   public void post(Request request, Response response) {
     generateResponseWithAllowedMethods(StatusCode.METHOD_NOT_ALLOWED, request, response);
   }

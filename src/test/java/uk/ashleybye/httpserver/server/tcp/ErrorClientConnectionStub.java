@@ -1,4 +1,9 @@
-package uk.ashleybye.httpserver.server;
+package uk.ashleybye.httpserver.server.tcp;
+
+import uk.ashleybye.httpserver.server.ClosingConnectionException;
+import uk.ashleybye.httpserver.server.Connection;
+import uk.ashleybye.httpserver.server.IncomingConnectionException;
+import uk.ashleybye.httpserver.server.OutgoingConnectionException;
 
 public class ErrorClientConnectionStub implements Connection {
 

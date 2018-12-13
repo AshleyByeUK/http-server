@@ -2,7 +2,6 @@ package uk.ashleybye.httpserver.server;
 
 import java.io.PrintWriter;
 import java.util.concurrent.Executor;
-import uk.ashleybye.httpserver.http.Router;
 
 public class Server {
 

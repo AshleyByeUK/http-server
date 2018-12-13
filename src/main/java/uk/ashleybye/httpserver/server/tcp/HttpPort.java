@@ -1,8 +1,12 @@
-package uk.ashleybye.httpserver.server;
+package uk.ashleybye.httpserver.server.tcp;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import uk.ashleybye.httpserver.server.ClosingPortException;
+import uk.ashleybye.httpserver.server.Connection;
+import uk.ashleybye.httpserver.server.Port;
+import uk.ashleybye.httpserver.server.PortUnavailableException;
 
 public class HttpPort implements Port {
 

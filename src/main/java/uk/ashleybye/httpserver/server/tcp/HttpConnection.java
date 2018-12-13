@@ -1,9 +1,13 @@
-package uk.ashleybye.httpserver.server;
+package uk.ashleybye.httpserver.server.tcp;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import uk.ashleybye.httpserver.server.ClosingConnectionException;
+import uk.ashleybye.httpserver.server.Connection;
+import uk.ashleybye.httpserver.server.IncomingConnectionException;
+import uk.ashleybye.httpserver.server.OutgoingConnectionException;
 
 public class HttpConnection implements Connection {
 

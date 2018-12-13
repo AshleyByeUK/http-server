@@ -4,7 +4,7 @@ import uk.ashleybye.httpserver.http.RequestMethod;
 import uk.ashleybye.httpserver.server.Request;
 import uk.ashleybye.httpserver.server.Response;
 
-public class RedirectController extends Controller {
+public class RedirectController extends HttpController {
 
   public RedirectController(RequestMethod... requestMethods) {
     super(requestMethods);

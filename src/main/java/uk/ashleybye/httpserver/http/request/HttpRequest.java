@@ -2,9 +2,9 @@ package uk.ashleybye.httpserver.http.request;
 
 import uk.ashleybye.httpserver.http.ProtocolVersion;
 import uk.ashleybye.httpserver.http.RequestMethod;
-import uk.ashleybye.httpserver.http.controller.Controller;
+import uk.ashleybye.httpserver.http.response.HttpResponse;
+import uk.ashleybye.httpserver.server.Controller;
 import uk.ashleybye.httpserver.server.Request;
-import uk.ashleybye.httpserver.server.Response;
 
 public abstract class HttpRequest implements Request {
 
@@ -13,7 +13,7 @@ public abstract class HttpRequest implements Request {
   private ProtocolVersion protocolVersion;
   private String body;
 
-  public abstract Response respond(Controller controller);
+  public abstract HttpResponse respond(Controller controller);
 
   @Override
   public RequestMethod getMethod() {

@@ -1,9 +1,10 @@
-package uk.ashleybye.httpserver.http;
+package uk.ashleybye.httpserver.http.response;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
-import uk.ashleybye.httpserver.http.response.HttpResponse;
+import uk.ashleybye.httpserver.http.ProtocolVersion;
+import uk.ashleybye.httpserver.http.StatusCode;
 import uk.ashleybye.httpserver.server.Response;
 
 class HttpResponseTest {

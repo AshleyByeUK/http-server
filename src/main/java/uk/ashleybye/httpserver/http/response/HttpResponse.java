@@ -49,11 +49,11 @@ public class HttpResponse implements Response {
   }
 
   private String serializedHeaders() {
-    String string = "";
+    StringBuilder string = new StringBuilder();
     for (Entry<String, String> entry : headers.entrySet()) {
-      string += String.format("%s: %s%n", entry.getKey(), entry.getValue());
+      string.append(String.format("%s: %s%n", entry.getKey(), entry.getValue()));
     }
-    return string;
+    return string.toString();
   }
 
   private String serializedBody() {
