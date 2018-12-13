@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.ashleybye.httpserver.http.HttpRequestParser;
 import uk.ashleybye.httpserver.http.Router;
+import uk.ashleybye.httpserver.http.controller.EchoBodyController;
 import uk.ashleybye.httpserver.http.controller.GetWithBodyController;
 import uk.ashleybye.httpserver.http.controller.MethodOptionsTwoController;
 import uk.ashleybye.httpserver.http.controller.SimpleGetController;
@@ -33,7 +34,8 @@ public class ServerTest {
         .addRoute("/simple_get", new SimpleGetController(GET))
         .addRoute("/get_with_body", new GetWithBodyController())
         .addRoute("/method_options", new GetWithBodyController(GET))
-        .addRoute("/method_options2", new MethodOptionsTwoController(GET, PUT, POST));
+        .addRoute("/method_options2", new MethodOptionsTwoController(GET, PUT, POST))
+        .addRoute("/echo_body", new EchoBodyController(POST));
     PrintWriter errorOut = new PrintWriter(stdErr);
     Executor executor = Runnable::run;
     server = new Server(parser, router, errorOut, executor);
@@ -78,7 +80,7 @@ public class ServerTest {
 
   @Test
   void testCanStartAndStopServer() {
-    ConnectionSpy connection = new ConnectionSpy("GET /simple_get HTTP/1.1\n\n");
+    ConnectionSpy connection = new ConnectionSpy("GET /simple_get HTTP/1.1\n\r\n");
     port = new PortSpy(server, connection);
 
     server.start(port);
@@ -97,7 +99,7 @@ public class ServerTest {
 
   @Test
   void testGetRequestWithEmptyBody() {
-    ConnectionSpy connection = new ConnectionSpy("GET /simple_get HTTP/1.1\n\n");
+    ConnectionSpy connection = new ConnectionSpy("GET /simple_get HTTP/1.1\n\r\n");
     port = new PortSpy(server, connection);
 
     server.start(port);
@@ -107,7 +109,7 @@ public class ServerTest {
 
   @Test
   void testHeadRequestForResourceWithBody() {
-    ConnectionSpy connection = new ConnectionSpy("HEAD /get_with_body HTTP/1.1\n\n");
+    ConnectionSpy connection = new ConnectionSpy("HEAD /get_with_body HTTP/1.1\n\r\n");
     port = new PortSpy(server, connection);
 
     server.start(port);
@@ -117,7 +119,7 @@ public class ServerTest {
 
   @Test
   void testOptionsRequestForResourceWithOnlyGet() {
-    ConnectionSpy connection = new ConnectionSpy("OPTIONS /method_options HTTP/1.1\n\n");
+    ConnectionSpy connection = new ConnectionSpy("OPTIONS /method_options HTTP/1.1\n\r\n");
     port = new PortSpy(server, connection);
 
     server.start(port);
@@ -127,7 +129,7 @@ public class ServerTest {
 
   @Test
   void testOptionsRequestForResourceWithMultipleMethods() {
-    ConnectionSpy connection = new ConnectionSpy("OPTIONS /method_options2 HTTP/1.1\n\n");
+    ConnectionSpy connection = new ConnectionSpy("OPTIONS /method_options2 HTTP/1.1\n\r\n");
     port = new PortSpy(server, connection);
 
     server.start(port);
@@ -137,7 +139,7 @@ public class ServerTest {
 
   @Test
   void testResourceNotFound() {
-    ConnectionSpy connection = new ConnectionSpy("GET /not_found_resource HTTP/1.1\n\n");
+    ConnectionSpy connection = new ConnectionSpy("GET /not_found_resource HTTP/1.1\n\r\n");
     port = new PortSpy(server, connection);
 
     server.start(port);
@@ -147,7 +149,7 @@ public class ServerTest {
 
   @Test
   void testNotAllowedMethod() {
-    ConnectionSpy connection = new ConnectionSpy("GET /get_with_body HTTP/1.1\n\n");
+    ConnectionSpy connection = new ConnectionSpy("GET /get_with_body HTTP/1.1\n\r\n");
     port = new PortSpy(server, connection);
 
     server.start(port);
@@ -156,9 +158,19 @@ public class ServerTest {
   }
 
   @Test
+  void testPostMethod() {
+    ConnectionSpy connection = new ConnectionSpy("POST /echo_body HTTP/1.1\n\r\nsome body");
+    port = new PortSpy(server, connection);
+
+    server.start(port);
+
+    assertEquals("HTTP/1.1 200 OK\n\r\nsome body", connection.getSentData());
+  }
+
+  @Test
   void testServesMultipleRequests() {
-    ConnectionSpy connectionOne = new ConnectionSpy("GET /not_found_resource HTTP/1.1\n\n");
-    ConnectionSpy connectionTwo = new ConnectionSpy("GET /not_found_resource HTTP/1.1\n\n");
+    ConnectionSpy connectionOne = new ConnectionSpy("GET /not_found_resource HTTP/1.1\n\r\n");
+    ConnectionSpy connectionTwo = new ConnectionSpy("GET /not_found_resource HTTP/1.1\n\r\n");
     port = new PortSpy(server, connectionOne, connectionTwo);
 
     server.start(port);

@@ -1,8 +1,7 @@
 package uk.ashleybye.httpserver.server;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 
@@ -17,16 +16,31 @@ public class HttpConnection implements Connection {
   @Override
   public String receiveData() {
     try {
-      return new BufferedReader(new InputStreamReader(socket.getInputStream())).readLine();
+      InputStream inputStream = socket.getInputStream();
+      return readAllBytes(inputStream);
     } catch (IOException e) {
       throw new IncomingConnectionException();
     }
   }
 
+  private String readAllBytes(InputStream inputStream) throws IOException {
+    StringBuilder incomingData = new StringBuilder();
+    do {
+      incomingData.append(readNextByte(inputStream));
+    } while (inputStream.available() > 0);
+    return incomingData.toString();
+  }
+
+  private char readNextByte(InputStream inputStream) throws IOException {
+    return (char) inputStream.read();
+  }
+
   @Override
   public void sendData(String data) {
     try {
-      new PrintWriter(socket.getOutputStream(), true).println(data);
+      PrintWriter printWriter = new PrintWriter(socket.getOutputStream());
+      printWriter.print(data);
+      printWriter.close();
     } catch (IOException e) {
       throw new OutgoingConnectionException();
     }

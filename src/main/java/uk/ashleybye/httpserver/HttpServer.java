@@ -9,6 +9,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import uk.ashleybye.httpserver.http.HttpRequestParser;
 import uk.ashleybye.httpserver.http.Router;
+import uk.ashleybye.httpserver.http.controller.EchoBodyController;
 import uk.ashleybye.httpserver.http.controller.GetWithBodyController;
 import uk.ashleybye.httpserver.http.controller.MethodOptionsTwoController;
 import uk.ashleybye.httpserver.http.controller.SimpleGetController;
@@ -35,6 +36,7 @@ public class HttpServer {
         .addRoute("/simple_get", new SimpleGetController(GET))
         .addRoute("/get_with_body", new GetWithBodyController())
         .addRoute("/method_options", new GetWithBodyController(GET))
-        .addRoute("/method_options2", new MethodOptionsTwoController(GET, PUT, POST));
+        .addRoute("/method_options2", new MethodOptionsTwoController(GET, PUT, POST))
+        .addRoute("/echo_body", new EchoBodyController(POST));
   }
 }

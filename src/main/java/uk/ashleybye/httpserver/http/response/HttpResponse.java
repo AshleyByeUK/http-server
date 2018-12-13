@@ -42,7 +42,7 @@ public class HttpResponse implements Response {
   }
 
   private String serializedStatusLine() {
-    return String.format("%s %d %s\n",
+    return String.format("%s %d %s%n",
         protocolVersion.toString(),
         statusCode.getStatusCode(),
         statusCode.getStatusMessage());
@@ -57,6 +57,6 @@ public class HttpResponse implements Response {
   }
 
   private String serializedBody() {
-    return body.isEmpty() ? body : "\n" + body;
+    return body.isEmpty() ? "" : "\r\n" + body.stripTrailing();
   }
 }

@@ -47,7 +47,7 @@ task acceptanceTests {
     doLast {
         exec {
             workingDir 'acceptance-tests'
-            commandLine 'bundle', 'exec', 'spinach', '-t', '@simple-get,@not-found.@simple-head,@simple-options,@not-allowed'
+            commandLine 'bundle', 'exec', 'spinach', '-t', '@simple-get,@not-found.@simple-head,@simple-options,@not-allowed,@simple-post'
         }
     }
 }

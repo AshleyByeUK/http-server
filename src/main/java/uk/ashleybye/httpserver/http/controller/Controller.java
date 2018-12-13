@@ -35,6 +35,11 @@ public abstract class Controller {
         buildNotFoundResponse(request, response);
       }
 
+      @Override
+      public void post(Request request, Response response) {
+        buildNotFoundResponse(request, response);
+      }
+
       private void buildNotFoundResponse(Request request, Response response) {
         response.setProtocolVersion(request.getProtocolVersion());
         response.setStatusCode(StatusCode.NOT_FOUND);
@@ -54,6 +59,10 @@ public abstract class Controller {
   }
 
   public void get(Request request, Response response) {
+    generateResponseWithAllowedMethods(StatusCode.METHOD_NOT_ALLOWED, request, response);
+  }
+
+  public void post(Request request, Response response) {
     generateResponseWithAllowedMethods(StatusCode.METHOD_NOT_ALLOWED, request, response);
   }
 
