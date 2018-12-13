@@ -1,13 +1,19 @@
-package uk.ashleybye.httpserver.http;
+package uk.ashleybye.httpserver.http.request;
 
+import uk.ashleybye.httpserver.http.ProtocolVersion;
+import uk.ashleybye.httpserver.http.RequestMethod;
+import uk.ashleybye.httpserver.http.controller.Controller;
 import uk.ashleybye.httpserver.server.Request;
+import uk.ashleybye.httpserver.server.Response;
 
-public class HttpRequest implements Request {
+public abstract class HttpRequest implements Request {
 
   private RequestMethod method;
   private String uri;
   private ProtocolVersion protocolVersion;
   private String body;
+
+ public abstract Response respond(Controller controller);
 
   @Override
   public RequestMethod getMethod() {

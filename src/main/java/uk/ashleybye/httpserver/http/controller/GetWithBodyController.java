@@ -1,16 +1,10 @@
 package uk.ashleybye.httpserver.http.controller;
 
-import uk.ashleybye.httpserver.http.StatusCode;
-import uk.ashleybye.httpserver.http.router.Controller;
-import uk.ashleybye.httpserver.server.Request;
-import uk.ashleybye.httpserver.server.Response;
+import uk.ashleybye.httpserver.http.RequestMethod;
 
-public class GetWithBodyController implements Controller {
+public class GetWithBodyController extends Controller {
 
-  @Override
-  public void get(Request request, Response response) {
-    response.setProtocolVersion(request.getProtocolVersion());
-    response.setStatusCode(StatusCode.OK);
-    response.setBody("body");
+  public GetWithBodyController(RequestMethod... allowedMethods) {
+    super(allowedMethods);
   }
 }

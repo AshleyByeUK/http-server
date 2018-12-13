@@ -1,6 +1,18 @@
 package uk.ashleybye.httpserver.http;
 
 public enum StatusCode {
+  METHOD_NOT_ALLOWED {
+    @Override
+    public int getStatusCode() {
+      return 405;
+    }
+
+    @Override
+    public String getStatusMessage() {
+      return "Method Not Allowed";
+    }
+  },
+
   NOT_FOUND {
     public int getStatusCode() {
       return 404;

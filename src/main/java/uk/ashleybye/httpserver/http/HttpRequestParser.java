@@ -1,11 +1,15 @@
 package uk.ashleybye.httpserver.http;
 
+import uk.ashleybye.httpserver.http.request.GetRequest;
+import uk.ashleybye.httpserver.http.request.HeadRequest;
+import uk.ashleybye.httpserver.http.request.OptionsRequest;
+import uk.ashleybye.httpserver.server.Request;
 import uk.ashleybye.httpserver.server.RequestParser;
 
 public class HttpRequestParser implements RequestParser {
 
   @Override
-  public HttpRequest parse(String incomingData) {
+  public Request parse(String incomingData) {
     String[] headersAndBody = incomingData.split("\n\n");
     String headers = headersAndBody.length > 0 ? headersAndBody[0] : "";
     String method = headers.split(" ")[0];
@@ -13,7 +17,15 @@ public class HttpRequestParser implements RequestParser {
     String protocolVersion = headers.split(" ")[2];
     String body = headersAndBody.length > 1 ? headersAndBody[1] : "";
 
-    HttpRequest request = new HttpRequest();
+    Request request;
+    RequestMethod requestMethod = parseMethod(method);
+    if (requestMethod.equals(RequestMethod.GET)) {
+      request = new GetRequest();
+    } else if (requestMethod.equals(RequestMethod.HEAD)) {
+      request = new HeadRequest();
+    } else {
+      request = new OptionsRequest();
+    }
     request.setMethod(parseMethod(method));
     request.setUri(uri);
     request.setProtocolVersion(parseProtocolVersion(protocolVersion));

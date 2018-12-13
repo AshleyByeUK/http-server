@@ -1,7 +1,10 @@
-package uk.ashleybye.httpserver.http;
+package uk.ashleybye.httpserver.http.response;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import uk.ashleybye.httpserver.http.ProtocolVersion;
+import uk.ashleybye.httpserver.http.StatusCode;
 import uk.ashleybye.httpserver.server.Response;
 
 public class HttpResponse implements Response {
@@ -47,8 +50,8 @@ public class HttpResponse implements Response {
 
   private String serializedHeaders() {
     String string = "";
-    for (String key : headers.keySet()) {
-      string += String.format("%s: %s\n", key, headers.get(key));
+    for (Entry<String, String> entry : headers.entrySet()) {
+      string += String.format("%s: %s%n", entry.getKey(), entry.getValue());
     }
     return string;
   }
