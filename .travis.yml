@@ -9,6 +9,6 @@ script:
   - ./gradlew test jacocoTestReport
   - ./gradlew jar
   - java -jar build/http-server.jar &
-  - cd acceptance-tests && bundle install && bundle exec spinach -t @simple-get,@not-found,@simple-head,@simple-options,@not-allowed && cd ..
+  - cd acceptance-tests && bundle install && bundle exec spinach -t @simple-get,@not-found,@simple-head,@simple-options,@not-allowed,@simple-post && cd ..
 after_success:
   - bash <(curl -s https://codecov.io/bash)

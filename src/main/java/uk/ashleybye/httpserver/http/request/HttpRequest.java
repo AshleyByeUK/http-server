@@ -13,7 +13,7 @@ public abstract class HttpRequest implements Request {
   private ProtocolVersion protocolVersion;
   private String body;
 
- public abstract Response respond(Controller controller);
+  public abstract Response respond(Controller controller);
 
   @Override
   public RequestMethod getMethod() {
