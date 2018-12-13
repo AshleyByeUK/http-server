@@ -1,39 +1,98 @@
 package uk.ashleybye.httpserver.http;
 
+import uk.ashleybye.httpserver.http.controller.Controller;
 import uk.ashleybye.httpserver.http.request.GetRequest;
 import uk.ashleybye.httpserver.http.request.HeadRequest;
+import uk.ashleybye.httpserver.http.request.HttpRequest;
 import uk.ashleybye.httpserver.http.request.OptionsRequest;
 import uk.ashleybye.httpserver.http.request.PostRequest;
+import uk.ashleybye.httpserver.http.response.BadRequestResponse;
+import uk.ashleybye.httpserver.http.response.HttpVersionNotSupportedResponse;
+import uk.ashleybye.httpserver.http.response.NotImplementedResponse;
 import uk.ashleybye.httpserver.server.Request;
 import uk.ashleybye.httpserver.server.RequestParser;
+import uk.ashleybye.httpserver.server.Response;
 
 public class HttpRequestParser implements RequestParser {
 
   @Override
   public Request parse(String incomingData) {
+    try {
+      return parseIncomingData(incomingData);
+    } catch (NotImplementedException e) {
+      return new HttpRequest() {
+        @Override
+        public Response respond(Controller controller) {
+          return new NotImplementedResponse();
+        }
+      };
+    } catch (UnsupportedProtocolVersionException e) {
+      return new HttpRequest() {
+        @Override
+        public Response respond(Controller controller) {
+          return new HttpVersionNotSupportedResponse();
+        }
+      };
+    } catch (Exception e) {
+      return new HttpRequest() {
+        @Override
+        public Response respond(Controller controller) {
+          return new BadRequestResponse();
+        }
+      };
+    }
+  }
+
+  private Request parseIncomingData(String incomingData) {
+    Request request;
+    String statusLine = parseStatusLine(incomingData);
+
+    String method = statusLine.split(" ")[0];
+    RequestMethod requestMethod = parseMethod(method);
+    request = newRequestObjectForMethod(requestMethod);
+    request.setMethod(requestMethod);
+
+    String uri = statusLine.split(" ")[1];
+    request.setUri(uri);
+
+    String protocolVersion = statusLine.split(" ")[2];
+    request.setProtocolVersion(parseProtocolVersion(protocolVersion));
+
+    String body = parseBody(incomingData);
+    request.setBody(body);
+
+    return request;
+  }
+
+  private String parseStatusLine(String incomingData) {
     String[] headersAndBody = incomingData.split("\n\r\n");
     String[] headers = headersAndBody.length > 0 ? headersAndBody[0].split("\n") : new String[]{};
-    String statusLine = headers[0].strip();
-    String method = statusLine.split(" ")[0];
-    String uri = statusLine.split(" ")[1];
-    String protocolVersion = statusLine.split(" ")[2];
-    String body = headersAndBody.length > 1 ? headersAndBody[1] : "";
+    return headers[0].strip();
+  }
 
+  private String parseBody(String incomingData) {
+    String[] headersAndBody = incomingData.split("\n\r\n");
+    return headersAndBody.length > 1 ? headersAndBody[1] : "";
+  }
+
+  private Request newRequestObjectForMethod(RequestMethod requestMethod) {
     Request request;
-    RequestMethod requestMethod = parseMethod(method);
-    if (requestMethod.equals(RequestMethod.HEAD)) {
-      request = new HeadRequest();
-    } else if (requestMethod.equals(RequestMethod.OPTIONS)) {
-      request = new OptionsRequest();
-    } else if (requestMethod.equals(RequestMethod.GET)) {
-      request = new GetRequest();
-    } else {
-      request = new PostRequest();
+    switch (requestMethod) {
+      case HEAD:
+        request = new HeadRequest();
+        break;
+      case OPTIONS:
+        request = new OptionsRequest();
+        break;
+      case GET:
+        request = new GetRequest();
+        break;
+      case POST:
+        request = new PostRequest();
+        break;
+      default:
+        throw new NotImplementedException();
     }
-    request.setMethod(parseMethod(method));
-    request.setUri(uri);
-    request.setProtocolVersion(parseProtocolVersion(protocolVersion));
-    request.setBody(body);
     return request;
   }
 
@@ -48,7 +107,7 @@ public class HttpRequestParser implements RequestParser {
       case "POST":
         return RequestMethod.POST;
       default:
-        return RequestMethod.INVALID_METHOD;
+        throw new NotImplementedException();
     }
   }
 
@@ -56,7 +115,15 @@ public class HttpRequestParser implements RequestParser {
     if (protocolVersion.equals("HTTP/1.1")) {
       return ProtocolVersion.HTTP_1_1;
     } else {
-      return ProtocolVersion.NOT_SUPPORTED;
+      throw new UnsupportedProtocolVersionException();
     }
+  }
+
+  private class NotImplementedException extends RuntimeException {
+
+  }
+
+  private class UnsupportedProtocolVersionException extends RuntimeException {
+
   }
 }

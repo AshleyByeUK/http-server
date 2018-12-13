@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 import uk.ashleybye.httpserver.server.Request;
+import uk.ashleybye.httpserver.server.Response;
 
 class HttpRequestParserTest {
 
@@ -98,8 +99,9 @@ class HttpRequestParserTest {
     HttpRequestParser parser = new HttpRequestParser();
 
     Request request = parser.parse(message);
+    Response response = request.respond(null);
 
-    assertEquals(RequestMethod.INVALID_METHOD, request.getMethod());
+    assertEquals("HTTP/1.1 501 Not Implemented\n", response.serialize());
   }
 
   @Test
@@ -114,7 +116,19 @@ class HttpRequestParserTest {
     HttpRequestParser parser = new HttpRequestParser();
 
     Request request = parser.parse(message);
+    Response response = request.respond(null);
 
-    assertEquals(ProtocolVersion.NOT_SUPPORTED, request.getProtocolVersion());
+    assertEquals("HTTP/1.1 505 HTTP Version Not Supported\n", response.serialize());
+  }
+
+  @Test
+  void testParsesMalformedRequest() {
+    String message = "GET";
+    HttpRequestParser parser = new HttpRequestParser();
+
+    Request request = parser.parse(message);
+    Response response = request.respond(null);
+
+    assertEquals("HTTP/1.1 400 Bad Request\n", response.serialize());
   }
 }
