@@ -3,6 +3,7 @@ package uk.ashleybye.httpserver.http;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
+import uk.ashleybye.httpserver.server.Request;
 
 class HttpRequestParserTest {
 
@@ -11,7 +12,7 @@ class HttpRequestParserTest {
     String message = "GET /simple_get HTTP/1.1\n\n";
     HttpRequestParser parser = new HttpRequestParser();
 
-    HttpRequest request = parser.parse(message);
+    Request request = parser.parse(message);
 
     assertEquals(RequestMethod.GET, request.getMethod());
     assertEquals("/simple_get", request.getUri());
@@ -24,7 +25,7 @@ class HttpRequestParserTest {
     String message = "INVALID /simple_get HTTP/1.1\n\n";
     HttpRequestParser parser = new HttpRequestParser();
 
-    HttpRequest request = parser.parse(message);
+    Request request = parser.parse(message);
 
     assertEquals(RequestMethod.INVALID_METHOD, request.getMethod());
   }
@@ -34,7 +35,7 @@ class HttpRequestParserTest {
     String message = "GET /simple_get HTTP/0.0\n\n";
     HttpRequestParser parser = new HttpRequestParser();
 
-    HttpRequest request = parser.parse(message);
+    Request request = parser.parse(message);
 
     assertEquals(ProtocolVersion.NOT_SUPPORTED, request.getProtocolVersion());
   }

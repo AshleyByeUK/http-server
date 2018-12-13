@@ -1,6 +1,6 @@
 package uk.ashleybye.httpserver.http;
 
-import uk.ashleybye.httpserver.http.router.Controller;
+import uk.ashleybye.httpserver.http.controller.Controller;
 import uk.ashleybye.httpserver.server.Request;
 import uk.ashleybye.httpserver.server.Response;
 
