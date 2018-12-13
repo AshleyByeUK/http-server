@@ -16,7 +16,9 @@ import uk.ashleybye.httpserver.http.HttpRequestParser;
 import uk.ashleybye.httpserver.http.Router;
 import uk.ashleybye.httpserver.http.controller.EchoBodyController;
 import uk.ashleybye.httpserver.http.controller.GetWithBodyController;
+import uk.ashleybye.httpserver.http.controller.MethodOptionsController;
 import uk.ashleybye.httpserver.http.controller.MethodOptionsTwoController;
+import uk.ashleybye.httpserver.http.controller.RedirectController;
 import uk.ashleybye.httpserver.http.controller.SimpleGetController;
 import uk.ashleybye.httpserver.http.router.HttpRouter;
 
@@ -33,9 +35,10 @@ public class ServerTest {
     Router router = new HttpRouter()
         .addRoute("/simple_get", new SimpleGetController(GET))
         .addRoute("/get_with_body", new GetWithBodyController())
-        .addRoute("/method_options", new GetWithBodyController(GET))
+        .addRoute("/method_options", new MethodOptionsController(GET))
         .addRoute("/method_options2", new MethodOptionsTwoController(GET, PUT, POST))
-        .addRoute("/echo_body", new EchoBodyController(POST));
+        .addRoute("/echo_body", new EchoBodyController(POST))
+        .addRoute("/redirect", new RedirectController(GET));
     PrintWriter errorOut = new PrintWriter(stdErr);
     Executor executor = Runnable::run;
     server = new Server(parser, router, errorOut, executor);
@@ -138,7 +141,27 @@ public class ServerTest {
   }
 
   @Test
-  void testResourceNotFound() {
+  void testHeadResourceNotFound() {
+    ConnectionSpy connection = new ConnectionSpy("HEAD /not_found_resource HTTP/1.1\n\r\n");
+    port = new PortSpy(server, connection);
+
+    server.start(port);
+
+    assertEquals("HTTP/1.1 404 Not Found\n", connection.getSentData());
+  }
+
+  @Test
+  void testOptionsResourceNotFound() {
+    ConnectionSpy connection = new ConnectionSpy("OPTIONS /not_found_resource HTTP/1.1\n\r\n");
+    port = new PortSpy(server, connection);
+
+    server.start(port);
+
+    assertEquals("HTTP/1.1 404 Not Found\n", connection.getSentData());
+  }
+
+  @Test
+  void testGetResourceNotFound() {
     ConnectionSpy connection = new ConnectionSpy("GET /not_found_resource HTTP/1.1\n\r\n");
     port = new PortSpy(server, connection);
 
@@ -148,8 +171,28 @@ public class ServerTest {
   }
 
   @Test
-  void testNotAllowedMethod() {
+  void testPostResourceNotFound() {
+    ConnectionSpy connection = new ConnectionSpy("POST /not_found_resource HTTP/1.1\n\r\n");
+    port = new PortSpy(server, connection);
+
+    server.start(port);
+
+    assertEquals("HTTP/1.1 404 Not Found\n", connection.getSentData());
+  }
+
+  @Test
+  void testGetNotAllowedMethod() {
     ConnectionSpy connection = new ConnectionSpy("GET /get_with_body HTTP/1.1\n\r\n");
+    port = new PortSpy(server, connection);
+
+    server.start(port);
+
+    assertEquals("HTTP/1.1 405 Method Not Allowed\nAllow: HEAD,OPTIONS\n", connection.getSentData());
+  }
+
+  @Test
+  void testPostNotAllowedMethod() {
+    ConnectionSpy connection = new ConnectionSpy("POST /get_with_body HTTP/1.1\n\r\n");
     port = new PortSpy(server, connection);
 
     server.start(port);
@@ -165,6 +208,17 @@ public class ServerTest {
     server.start(port);
 
     assertEquals("HTTP/1.1 200 OK\n\r\nsome body", connection.getSentData());
+  }
+
+  @Test
+  void testRedirect() {
+    ConnectionSpy connection = new ConnectionSpy("GET /redirect HTTP/1.1\n\r\n");
+    port = new PortSpy(server, connection);
+
+    server.start(port);
+
+    assertEquals("HTTP/1.1 301 Moved Permanently\nLocation: http://0.0.0.0:5000/simple_get\n",
+        connection.getSentData());
   }
 
   @Test

@@ -90,4 +90,11 @@ public abstract class Controller {
   private <T> String possibleTrailingComma(int currentItemNumber, List<T> list) {
     return (currentItemNumber < list.size() - 1) ? "," : "";
   }
+
+  protected final void redirect(String uri, Request request, Response response) {
+    response.setProtocolVersion(request.getProtocolVersion());
+    response.setStatusCode(StatusCode.MOVED_PERMANENTLY);
+    response.addHeader("Location", uri);
+    response.setBody("");
+  }
 }

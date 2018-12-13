@@ -12,6 +12,7 @@ import uk.ashleybye.httpserver.http.Router;
 import uk.ashleybye.httpserver.http.controller.EchoBodyController;
 import uk.ashleybye.httpserver.http.controller.GetWithBodyController;
 import uk.ashleybye.httpserver.http.controller.MethodOptionsTwoController;
+import uk.ashleybye.httpserver.http.controller.RedirectController;
 import uk.ashleybye.httpserver.http.controller.SimpleGetController;
 import uk.ashleybye.httpserver.http.router.HttpRouter;
 import uk.ashleybye.httpserver.server.HttpPort;
@@ -37,6 +38,7 @@ public class HttpServer {
         .addRoute("/get_with_body", new GetWithBodyController())
         .addRoute("/method_options", new GetWithBodyController(GET))
         .addRoute("/method_options2", new MethodOptionsTwoController(GET, PUT, POST))
-        .addRoute("/echo_body", new EchoBodyController(POST));
+        .addRoute("/echo_body", new EchoBodyController(POST))
+        .addRoute("/redirect", new RedirectController(GET));
   }
 }
