@@ -1,19 +1,19 @@
-package uk.ashleybye.httpserver.server;
+package uk.ashleybye.httpserver.server.tcp;
 
-public class MultipleConnectionsSpy implements Connection {
+import uk.ashleybye.httpserver.server.Connection;
 
-  private static int numberOfTimesReceivedData = 0;
+public class ConnectionSpy implements Connection {
 
   private final String incomingData;
   private String data;
+  private boolean closed = false;
 
-  public MultipleConnectionsSpy(String incomingData) {
+  public ConnectionSpy(String incomingData) {
     this.incomingData = incomingData;
   }
 
   @Override
   public String receiveData() {
-    numberOfTimesReceivedData++;
     return incomingData;
   }
 
@@ -24,14 +24,14 @@ public class MultipleConnectionsSpy implements Connection {
 
   @Override
   public void close() {
-
+    closed = true;
   }
 
   public String getSentData() {
     return data;
   }
 
-  public int getNumberOfTimesReceivedData() {
-    return numberOfTimesReceivedData;
+  public boolean isClosed() {
+    return closed;
   }
 }

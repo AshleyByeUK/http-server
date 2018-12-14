@@ -5,7 +5,7 @@ import uk.ashleybye.httpserver.http.StatusCode;
 import uk.ashleybye.httpserver.server.Request;
 import uk.ashleybye.httpserver.server.Response;
 
-public class EchoBodyController extends Controller {
+public class EchoBodyController extends HttpController {
 
   public EchoBodyController(RequestMethod... requestMethods) {
     super(requestMethods);

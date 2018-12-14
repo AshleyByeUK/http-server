@@ -37,6 +37,18 @@ public enum StatusCode {
     }
   },
 
+  MOVED_PERMANENTLY {
+    @Override
+    public int getStatusCode() {
+      return 301;
+    }
+
+    @Override
+    public String getStatusMessage() {
+      return "Moved Permanently";
+    }
+  },
+
   NOT_FOUND {
     public int getStatusCode() {
       return 404;

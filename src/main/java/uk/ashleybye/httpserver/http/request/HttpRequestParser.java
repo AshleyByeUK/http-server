@@ -1,50 +1,46 @@
-package uk.ashleybye.httpserver.http;
+package uk.ashleybye.httpserver.http.request;
 
-import uk.ashleybye.httpserver.http.controller.Controller;
-import uk.ashleybye.httpserver.http.request.GetRequest;
-import uk.ashleybye.httpserver.http.request.HeadRequest;
-import uk.ashleybye.httpserver.http.request.HttpRequest;
-import uk.ashleybye.httpserver.http.request.OptionsRequest;
-import uk.ashleybye.httpserver.http.request.PostRequest;
+import uk.ashleybye.httpserver.http.ProtocolVersion;
+import uk.ashleybye.httpserver.http.RequestMethod;
 import uk.ashleybye.httpserver.http.response.BadRequestResponse;
+import uk.ashleybye.httpserver.http.response.HttpResponse;
 import uk.ashleybye.httpserver.http.response.HttpVersionNotSupportedResponse;
 import uk.ashleybye.httpserver.http.response.NotImplementedResponse;
-import uk.ashleybye.httpserver.server.Request;
+import uk.ashleybye.httpserver.server.Controller;
 import uk.ashleybye.httpserver.server.RequestParser;
-import uk.ashleybye.httpserver.server.Response;
 
 public class HttpRequestParser implements RequestParser {
 
   @Override
-  public Request parse(String incomingData) {
+  public HttpRequest parse(String incomingData) {
     try {
       return parseIncomingData(incomingData);
     } catch (NotImplementedException e) {
       return new HttpRequest() {
         @Override
-        public Response respond(Controller controller) {
+        public HttpResponse respond(Controller controller) {
           return new NotImplementedResponse();
         }
       };
     } catch (UnsupportedProtocolVersionException e) {
       return new HttpRequest() {
         @Override
-        public Response respond(Controller controller) {
+        public HttpResponse respond(Controller controller) {
           return new HttpVersionNotSupportedResponse();
         }
       };
     } catch (Exception e) {
       return new HttpRequest() {
         @Override
-        public Response respond(Controller controller) {
+        public HttpResponse respond(Controller controller) {
           return new BadRequestResponse();
         }
       };
     }
   }
 
-  private Request parseIncomingData(String incomingData) {
-    Request request;
+  private HttpRequest parseIncomingData(String incomingData) {
+    HttpRequest request;
     String statusLine = parseStatusLine(incomingData);
 
     String method = statusLine.split(" ")[0];
@@ -75,8 +71,8 @@ public class HttpRequestParser implements RequestParser {
     return headersAndBody.length > 1 ? headersAndBody[1] : "";
   }
 
-  private Request newRequestObjectForMethod(RequestMethod requestMethod) {
-    Request request;
+  private HttpRequest newRequestObjectForMethod(RequestMethod requestMethod) {
+    HttpRequest request;
     switch (requestMethod) {
       case HEAD:
         request = new HeadRequest();

@@ -1,8 +1,11 @@
-package uk.ashleybye.httpserver.server;
+package uk.ashleybye.httpserver.server.tcp;
 
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
+import uk.ashleybye.httpserver.server.Connection;
+import uk.ashleybye.httpserver.server.Port;
+import uk.ashleybye.httpserver.server.Server;
 
 public class PortSpy implements Port {
 
