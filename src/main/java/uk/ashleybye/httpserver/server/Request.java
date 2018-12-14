@@ -5,7 +5,9 @@ import uk.ashleybye.httpserver.http.RequestMethod;
 
 public interface Request {
 
-  Response respond(Controller controller);
+  void respond(Responder handler, Response response);
+
+  boolean hasParseError();
 
   RequestMethod getMethod();
 

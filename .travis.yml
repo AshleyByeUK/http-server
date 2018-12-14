@@ -1,16 +1,16 @@
 matrix:
   include:
-    - os: linux
-      language: java
-      sudo: false # for faster builds
-      jdk: openjdk11
-    - os: osx
-      language: java
-      sudo: false # for faster builds
-      jdk: openjdk11
-#    - os: windows
-#      language: c # 'java' not supported, 'generic' causes VM to hang on boot.
-#      sudo: false # for faster builds
+  - os: linux
+    language: java
+    sudo: false
+    jdk: openjdk11
+  - os: osx
+    language: java
+    sudo: false
+    jdk: openjdk11
+  - os: windows
+    language: c
+    sudo: false
 before_script:
   - |
     if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
@@ -18,6 +18,7 @@ before_script:
       export JAVA_HOME="/c/Program Files/OpenJDK/jdk-11"
       export PATH="$JAVA_HOME/bin:$PATH"
       gem install bundle
+      export GRADLE_OPTS=-Dorg.gradle.daemon=false # Gradle daemon causes Windows VM to hang; disable it.
     fi
   - chmod +x gradlew
 script:
@@ -31,7 +32,16 @@ script:
   - cd acceptance-tests
   - bundle install
   - bundle exec spinach
-#  - kill %1
+  - kill %1
   - cd ..
 after_success:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then bash <(curl -s https://codecov.io/bash); fi
+#deploy:
+#  provider: heroku
+#  api_key:
+#    secure: R6djlO7aLg9N0I9OObpAJua6owv0M5ynvlyCLnuHswaQdH6GCtopkewEXd1hWuMsnqj4Dj5HUWHPeN4BACrMS/s7IbshG/z4Z7g3k6+MfNXd88k3zeLEVn5ONVpmWmCbj2QPRzOTc1qTZXd8uMqEDyVjj8pGbpmFbpQtF+H43IggORjKHFU+KU7AxiQp35dqDT+PAjHveRwXgpcig/fTCvu+Gbq9Cnbw8/vm3cZJ4FruPLXWW9YOpHwa4x+k0o1PvxtQ1w6IfO5uCVYBrNTP3RgJZ6PLau2J/Jyf3Y9aQFssIPNGtre97TpXDMCN+mOxtoBbuHsFveAbKG6C3NC/LDL4pcKMVtGK4wGjFU+uRtNNktl3EPAtoLgVFHgE1y2IRfsLSUVZ+4J7yjInfyZ5r1Fc5tnDOHGmA+1h07ZgHRQCypFeoq9Q3UFT9K1sCkwqe45JPHgi6E8h+eSmcmcrNcN15bzxjqCaFSzlgph6TtNzx6nJt/AAfktexrO4GZ7ROTe6JaeRJLbuMfaJuYj9ON23U54VUAzrhULwj5j0zaodWZoE1spAJNAbWVpm9JJnUUKx2zEeOGzXUuwjAxP3F1xZrLUDDkLvKKsl15pslehG7O3keGHkYE+FenpN1VF3LBu7Y2AMvXhke+JbFTx0/Vm2MpD9d/WPf9LRajkclG8=
+#  app: java-http-server
+#  on:
+#    branch: wip
+#  run:
+#    - java -jar build/http-server.jar

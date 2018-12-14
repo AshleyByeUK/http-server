@@ -6,34 +6,35 @@ import static uk.ashleybye.httpserver.http.RequestMethod.PUT;
 
 import java.io.PrintWriter;
 import java.util.concurrent.Executors;
-import uk.ashleybye.httpserver.http.controller.EchoBodyController;
-import uk.ashleybye.httpserver.http.controller.GetWithBodyController;
-import uk.ashleybye.httpserver.http.controller.MethodOptionsTwoController;
-import uk.ashleybye.httpserver.http.controller.RedirectController;
-import uk.ashleybye.httpserver.http.controller.SimpleGetController;
 import uk.ashleybye.httpserver.http.request.HttpRequestParser;
 import uk.ashleybye.httpserver.http.router.HttpRouter;
 import uk.ashleybye.httpserver.server.Server;
 import uk.ashleybye.httpserver.server.tcp.TcpPort;
 
-public class HttpServer {
+class HttpServer {
 
   public static void main(String[] args) {
-    Server server = new Server(
-        new HttpRequestParser(),
-        configureRouter(),
-        new PrintWriter(System.err, true),
-        Executors.newSingleThreadExecutor());
-    server.start(new TcpPort(5000));
+    initialiseServer()
+        .start(new TcpPort(5000));
   }
 
-  private static HttpRouter configureRouter() {
+  private static Server initialiseServer() {
+    return new Server(
+        new HttpRequestParser(),
+        configuredRouter(),
+        new PrintWriter(System.err, true),
+        Executors.newSingleThreadExecutor());
+  }
+
+  private static HttpRouter configuredRouter() {
     return new HttpRouter()
-        .addRoute("/simple_get", new SimpleGetController(GET))
-        .addRoute("/get_with_body", new GetWithBodyController())
-        .addRoute("/method_options", new GetWithBodyController(GET))
-        .addRoute("/method_options2", new MethodOptionsTwoController(GET, PUT, POST))
-        .addRoute("/echo_body", new EchoBodyController(POST))
-        .addRoute("/redirect", new RedirectController(GET));
+        .addRoute("/simple_get").useCustomResponder(GET, (request, response) -> {})
+        .addRoute("/get_with_body").useDefaultResponder()
+        .addRoute("/method_options").useCustomResponder(GET, (request, response) -> {})
+        .addRoute("/method_options2").useCustomResponder(GET, (request, response) -> {})
+        .addRoute("/method_options2").useCustomResponder(PUT, (request, response) -> {})
+        .addRoute("/method_options2").useCustomResponder(POST, (request, response) -> {})
+        .addRoute("/echo_body").useCustomResponder(POST, (request, response) -> response.setBody(request.getBody()))
+        .addRoute("/redirect").useRedirectResponder(GET, "http://127.0.0.1:5000/simple_get");
   }
 }

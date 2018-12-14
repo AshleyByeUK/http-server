@@ -12,12 +12,6 @@ import java.io.StringWriter;
 import java.util.concurrent.Executor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import uk.ashleybye.httpserver.http.controller.EchoBodyController;
-import uk.ashleybye.httpserver.http.controller.GetWithBodyController;
-import uk.ashleybye.httpserver.http.controller.MethodOptionsController;
-import uk.ashleybye.httpserver.http.controller.MethodOptionsTwoController;
-import uk.ashleybye.httpserver.http.controller.RedirectController;
-import uk.ashleybye.httpserver.http.controller.SimpleGetController;
 import uk.ashleybye.httpserver.http.request.HttpRequestParser;
 import uk.ashleybye.httpserver.http.router.HttpRouter;
 import uk.ashleybye.httpserver.server.tcp.ConnectionSpy;
@@ -26,7 +20,7 @@ import uk.ashleybye.httpserver.server.tcp.ErrorClosingPortStub;
 import uk.ashleybye.httpserver.server.tcp.PortSpy;
 import uk.ashleybye.httpserver.server.tcp.UnavailablePortStub;
 
-public class ServerTest {
+class ServerTest {
 
   private PortSpy port;
   private StringWriter stdErr = new StringWriter();
@@ -37,12 +31,14 @@ public class ServerTest {
   void setUp() {
     RequestParser parser = new HttpRequestParser();
     Router router = new HttpRouter()
-        .addRoute("/simple_get", new SimpleGetController(GET))
-        .addRoute("/get_with_body", new GetWithBodyController())
-        .addRoute("/method_options", new MethodOptionsController(GET))
-        .addRoute("/method_options2", new MethodOptionsTwoController(GET, PUT, POST))
-        .addRoute("/echo_body", new EchoBodyController(POST))
-        .addRoute("/redirect", new RedirectController(GET));
+        .addRoute("/simple_get").useCustomResponder(GET, (request, response) -> {})
+        .addRoute("/get_with_body").useDefaultResponder()
+        .addRoute("/method_options").useCustomResponder(GET, (request, response) -> {})
+        .addRoute("/method_options2").useCustomResponder(GET, (request, response) -> {})
+        .addRoute("/method_options2").useCustomResponder(PUT, (request, response) -> {})
+        .addRoute("/method_options2").useCustomResponder(POST, (request, response) -> {})
+        .addRoute("/echo_body").useCustomResponder(POST, (request, response) -> response.setBody(request.getBody()))
+        .addRoute("/redirect").useRedirectResponder(GET, "http://127.0.0.1:5000/simple_get");
     PrintWriter errorOut = new PrintWriter(stdErr);
     Executor executor = Runnable::run;
     server = new Server(parser, router, errorOut, executor);
@@ -141,7 +137,7 @@ public class ServerTest {
 
     server.start(port);
 
-    assertEquals("HTTP/1.1 200 OK\nAllow: GET,PUT,POST,HEAD,OPTIONS\n", connection.getSentData());
+    assertEquals("HTTP/1.1 200 OK\nAllow: GET,HEAD,OPTIONS,POST,PUT\n", connection.getSentData());
   }
 
   @Test
@@ -223,6 +219,36 @@ public class ServerTest {
 
     assertEquals("HTTP/1.1 301 Moved Permanently\nLocation: http://127.0.0.1:5000/simple_get\n",
         connection.getSentData());
+  }
+
+  @Test
+  void testInvalidMethodReturnsCorrectHeaders() {
+    ConnectionSpy connection = new ConnectionSpy("INVALID /simple_get HTTP/1.1\n\r\n");
+    port = new PortSpy(server, connection);
+
+    server.start(port);
+
+    assertEquals("HTTP/1.1 501 Not Implemented\n", connection.getSentData());
+  }
+
+  @Test
+  void testUnsupportedProtocolVersionMethodReturnsCorrectHeaders() {
+    ConnectionSpy connection = new ConnectionSpy("GET /simple_get HTTP/0.0\n\r\n");
+    port = new PortSpy(server, connection);
+
+    server.start(port);
+
+    assertEquals("HTTP/1.1 505 HTTP Version Not Supported\n", connection.getSentData());
+  }
+
+  @Test
+  void testMalformedRequestReturnsCorrectHeaders() {
+    ConnectionSpy connection = new ConnectionSpy("GET HTTP/1.1\n\r\n");
+    port = new PortSpy(server, connection);
+
+    server.start(port);
+
+    assertEquals("HTTP/1.1 400 Bad Request\n", connection.getSentData());
   }
 
   @Test
