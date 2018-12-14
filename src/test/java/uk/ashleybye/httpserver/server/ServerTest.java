@@ -105,7 +105,7 @@ public class ServerTest {
   }
 
   @Test
-  void testGetRequestWithEmptyBody() {
+  void testGetRequestWithEmptyBodyReturnsCorrectHeadersAndNoBody() {
     ConnectionSpy connection = new ConnectionSpy("GET /simple_get HTTP/1.1\n\r\n");
     port = new PortSpy(server, connection);
 
@@ -115,7 +115,7 @@ public class ServerTest {
   }
 
   @Test
-  void testHeadRequestForResourceWithBody() {
+  void testHeadRequestForResourceWithBodyReturnsCorrectHeadersAndNoBody() {
     ConnectionSpy connection = new ConnectionSpy("HEAD /get_with_body HTTP/1.1\n\r\n");
     port = new PortSpy(server, connection);
 
@@ -125,7 +125,7 @@ public class ServerTest {
   }
 
   @Test
-  void testOptionsRequestForResourceWithOnlyGet() {
+  void testOptionsRequestForResourceWithOnlyGetReturnsCorrectHeaders() {
     ConnectionSpy connection = new ConnectionSpy("OPTIONS /method_options HTTP/1.1\n\r\n");
     port = new PortSpy(server, connection);
 
@@ -135,7 +135,7 @@ public class ServerTest {
   }
 
   @Test
-  void testOptionsRequestForResourceWithMultipleMethods() {
+  void testOptionsRequestForResourceWithMultipleMethodsReturnsCorrectHeaders() {
     ConnectionSpy connection = new ConnectionSpy("OPTIONS /method_options2 HTTP/1.1\n\r\n");
     port = new PortSpy(server, connection);
 
@@ -145,7 +145,7 @@ public class ServerTest {
   }
 
   @Test
-  void testHeadResourceNotFound() {
+  void testHeadResourceNotFoundReturnsCorrectHeaders() {
     ConnectionSpy connection = new ConnectionSpy("HEAD /not_found_resource HTTP/1.1\n\r\n");
     port = new PortSpy(server, connection);
 
@@ -155,7 +155,7 @@ public class ServerTest {
   }
 
   @Test
-  void testOptionsResourceNotFound() {
+  void testOptionsResourceNotFoundReturnsCorrectHeaders() {
     ConnectionSpy connection = new ConnectionSpy("OPTIONS /not_found_resource HTTP/1.1\n\r\n");
     port = new PortSpy(server, connection);
 
@@ -165,7 +165,7 @@ public class ServerTest {
   }
 
   @Test
-  void testGetResourceNotFound() {
+  void testGetResourceNotFoundReturnsCorrectHeaders() {
     ConnectionSpy connection = new ConnectionSpy("GET /not_found_resource HTTP/1.1\n\r\n");
     port = new PortSpy(server, connection);
 
@@ -175,7 +175,7 @@ public class ServerTest {
   }
 
   @Test
-  void testPostResourceNotFound() {
+  void testPostResourceNotFoundReturnsCorrectHeaders() {
     ConnectionSpy connection = new ConnectionSpy("POST /not_found_resource HTTP/1.1\n\r\n");
     port = new PortSpy(server, connection);
 
@@ -185,7 +185,7 @@ public class ServerTest {
   }
 
   @Test
-  void testGetNotAllowedMethod() {
+  void testGetNotAllowedMethodReturnsCorrectHeaders() {
     ConnectionSpy connection = new ConnectionSpy("GET /get_with_body HTTP/1.1\n\r\n");
     port = new PortSpy(server, connection);
 
@@ -195,7 +195,7 @@ public class ServerTest {
   }
 
   @Test
-  void testPostNotAllowedMethod() {
+  void testPostNotAllowedMethodReturnsCorrectHeaders() {
     ConnectionSpy connection = new ConnectionSpy("POST /get_with_body HTTP/1.1\n\r\n");
     port = new PortSpy(server, connection);
 
@@ -205,7 +205,7 @@ public class ServerTest {
   }
 
   @Test
-  void testPostMethod() {
+  void testPostMethodReturnsCorrectHeadersAndBody() {
     ConnectionSpy connection = new ConnectionSpy("POST /echo_body HTTP/1.1\n\r\nsome body");
     port = new PortSpy(server, connection);
 
@@ -215,7 +215,7 @@ public class ServerTest {
   }
 
   @Test
-  void testRedirect() {
+  void testRedirectReturnsCorrectHeaders() {
     ConnectionSpy connection = new ConnectionSpy("GET /redirect HTTP/1.1\n\r\n");
     port = new PortSpy(server, connection);
 
