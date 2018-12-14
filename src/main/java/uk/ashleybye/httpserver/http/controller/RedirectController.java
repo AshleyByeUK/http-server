@@ -12,6 +12,6 @@ public class RedirectController extends HttpController {
 
   @Override
   public void get(Request request, Response response) {
-    redirect("http://0.0.0.0:5000/simple_get", request, response);
+    redirect("http://127.0.0.1:5000/simple_get", request, response);
   }
 }

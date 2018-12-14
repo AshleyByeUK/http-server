@@ -221,7 +221,7 @@ public class ServerTest {
 
     server.start(port);
 
-    assertEquals("HTTP/1.1 301 Moved Permanently\nLocation: http://0.0.0.0:5000/simple_get\n",
+    assertEquals("HTTP/1.1 301 Moved Permanently\nLocation: http://127.0.0.1:5000/simple_get\n",
         connection.getSentData());
   }
 

@@ -14,7 +14,7 @@ import uk.ashleybye.httpserver.http.controller.SimpleGetController;
 import uk.ashleybye.httpserver.http.request.HttpRequestParser;
 import uk.ashleybye.httpserver.http.router.HttpRouter;
 import uk.ashleybye.httpserver.server.Server;
-import uk.ashleybye.httpserver.server.tcp.HttpPort;
+import uk.ashleybye.httpserver.server.tcp.TcpPort;
 
 public class HttpServer {
 
@@ -24,7 +24,7 @@ public class HttpServer {
         configureRouter(),
         new PrintWriter(System.err, true),
         Executors.newSingleThreadExecutor());
-    server.start(new HttpPort(5000));
+    server.start(new TcpPort(5000));
   }
 
   private static HttpRouter configureRouter() {

@@ -1,24 +1,37 @@
 matrix:
   include:
-#    - os: linux
-#      language: java
-#      sudo: false # for faster builds
-#      jdk: openjdk11
-#    - os: osx
-#      language: java
-#      sudo: false # for faster builds
-#      jdk: openjdk11
-    - os: windows
-      language: c # 'java' not supported, 'generic' causes VM to hang on boot.
+    - os: linux
+      language: java
       sudo: false # for faster builds
+      jdk: openjdk11
+    - os: osx
+      language: java
+      sudo: false # for faster builds
+      jdk: openjdk11
+#    - os: windows
+#      language: c # 'java' not supported, 'generic' causes VM to hang on boot.
+#      sudo: false # for faster builds
 before_script:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then chmod +x .travis/install-linux.sh; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then chmod +x .travis/install-osx.sh; fi
-  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then chmod +x .travis/install-windows.sh; fi
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
+      choco install -y openjdk --version 11.0
+      export JAVA_HOME="/c/Program Files/OpenJDK/jdk-11"
+      export PATH="$JAVA_HOME/bin:$PATH"
+      gem install bundle
+    fi
+  - chmod +x gradlew
 script:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then source .travis/install-linux.sh; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then source .travis/install-osx.sh; fi
-  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then source .travis/install-windows.sh; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./gradlew test jacocoTestReport; fi
+  - |
+    if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then
+      ./gradlew check
+      ./gradlew test jacocoTestReport
+    fi
+  - ./gradlew jar
+  - java -jar build/http-server.jar &
+  - cd acceptance-tests
+  - bundle install
+  - bundle exec spinach
+#  - kill %1
+  - cd ..
 after_success:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then bash <(curl -s https://codecov.io/bash); fi
