@@ -32,7 +32,7 @@ script:
       ./gradlew test jacocoTestReport
     fi
   - ./gradlew jar
-  - java -jar build/http-server.jar &
+  - java -jar build/http-server.jar 5000 &
   - cd acceptance-tests
   - bundle install
   - bundle exec spinach
