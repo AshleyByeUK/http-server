@@ -57,6 +57,6 @@ public class HttpResponse implements Response {
   }
 
   private String serializedBody() {
-    return body.isEmpty() ? "" : "\r\n" + body.stripTrailing();
+    return body == null || body.isEmpty() ? "" : "\r\n" + body.stripTrailing();
   }
 }

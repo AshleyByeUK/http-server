@@ -2,11 +2,6 @@ package uk.ashleybye.httpserver.http.request;
 
 import uk.ashleybye.httpserver.http.ProtocolVersion;
 import uk.ashleybye.httpserver.http.RequestMethod;
-import uk.ashleybye.httpserver.http.response.BadRequestResponse;
-import uk.ashleybye.httpserver.http.response.HttpResponse;
-import uk.ashleybye.httpserver.http.response.HttpVersionNotSupportedResponse;
-import uk.ashleybye.httpserver.http.response.NotImplementedResponse;
-import uk.ashleybye.httpserver.server.Controller;
 import uk.ashleybye.httpserver.server.RequestParser;
 
 public class HttpRequestParser implements RequestParser {
@@ -16,36 +11,20 @@ public class HttpRequestParser implements RequestParser {
     try {
       return parseIncomingData(incomingData);
     } catch (NotImplementedException e) {
-      return new HttpRequest() {
-        @Override
-        public HttpResponse respond(Controller controller) {
-          return new NotImplementedResponse();
-        }
-      };
+      return new NotImplementedRequest();
     } catch (UnsupportedProtocolVersionException e) {
-      return new HttpRequest() {
-        @Override
-        public HttpResponse respond(Controller controller) {
-          return new HttpVersionNotSupportedResponse();
-        }
-      };
+      return new UnsupportedProtocolRequest();
     } catch (Exception e) {
-      return new HttpRequest() {
-        @Override
-        public HttpResponse respond(Controller controller) {
-          return new BadRequestResponse();
-        }
-      };
+      return new BadRequest();
     }
   }
 
   private HttpRequest parseIncomingData(String incomingData) {
-    HttpRequest request;
+    HttpRequest request = new HttpRequest();
     String statusLine = parseStatusLine(incomingData);
 
     String method = statusLine.split(" ")[0];
     RequestMethod requestMethod = parseMethod(method);
-    request = newRequestObjectForMethod(requestMethod);
     request.setMethod(requestMethod);
 
     String uri = statusLine.split(" ")[1];
@@ -69,27 +48,6 @@ public class HttpRequestParser implements RequestParser {
   private String parseBody(String incomingData) {
     String[] headersAndBody = incomingData.split("\n\r\n");
     return headersAndBody.length > 1 ? headersAndBody[1] : "";
-  }
-
-  private HttpRequest newRequestObjectForMethod(RequestMethod requestMethod) {
-    HttpRequest request;
-    switch (requestMethod) {
-      case HEAD:
-        request = new HeadRequest();
-        break;
-      case OPTIONS:
-        request = new OptionsRequest();
-        break;
-      case GET:
-        request = new GetRequest();
-        break;
-      case POST:
-        request = new PostRequest();
-        break;
-      default:
-        throw new NotImplementedException();
-    }
-    return request;
   }
 
   private RequestMethod parseMethod(String method) {

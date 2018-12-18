@@ -2,18 +2,26 @@ package uk.ashleybye.httpserver.http.request;
 
 import uk.ashleybye.httpserver.http.ProtocolVersion;
 import uk.ashleybye.httpserver.http.RequestMethod;
-import uk.ashleybye.httpserver.http.response.HttpResponse;
-import uk.ashleybye.httpserver.server.Controller;
 import uk.ashleybye.httpserver.server.Request;
+import uk.ashleybye.httpserver.server.Responder;
+import uk.ashleybye.httpserver.server.Response;
 
-public abstract class HttpRequest implements Request {
+public class HttpRequest implements Request {
 
   private RequestMethod method;
   private String uri;
   private ProtocolVersion protocolVersion;
   private String body;
 
-  public abstract HttpResponse respond(Controller controller);
+  @Override
+  public void respond(Responder controller, Response response) {
+    controller.respond(this, response);
+  }
+
+  @Override
+  public boolean hasParseError() {
+    return false;
+  }
 
   @Override
   public RequestMethod getMethod() {

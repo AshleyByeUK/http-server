@@ -15,7 +15,30 @@ To obtain the source code, clone the git repository:
 git clone git@github.com:AshleyByeUK/http-server.git
 ```
 
+Then change into the directory:
+
+```
+cd http-server
+```
+
+## Building the source
+
+The source code can be built and packaged into a JAR using Gradle:
+
+```
+./gradlew jar
+```
+
 ## Running the server
+
+To server can be run using the following command:
+
+```
+java -jar build/http-server.jar
+```
+
+This assumes that the source has been [packaged as a JAR](#building-the-source), the output of which is in the
+default build directory.
 
 ## Testing
 

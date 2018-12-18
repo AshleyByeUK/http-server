@@ -1,13 +1,13 @@
 package uk.ashleybye.httpserver.http.request;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import uk.ashleybye.httpserver.http.ProtocolVersion;
 import uk.ashleybye.httpserver.http.RequestMethod;
 import uk.ashleybye.httpserver.server.Request;
-import uk.ashleybye.httpserver.server.Response;
 
 class HttpRequestParserTest {
 
@@ -102,9 +102,8 @@ class HttpRequestParserTest {
     HttpRequestParser parser = new HttpRequestParser();
 
     Request request = parser.parse(message);
-    Response response = request.respond(null);
 
-    assertEquals("HTTP/1.1 501 Not Implemented\n", response.serialize());
+    assertTrue(request.hasParseError());
   }
 
   @Test
@@ -119,9 +118,8 @@ class HttpRequestParserTest {
     HttpRequestParser parser = new HttpRequestParser();
 
     Request request = parser.parse(message);
-    Response response = request.respond(null);
 
-    assertEquals("HTTP/1.1 505 HTTP Version Not Supported\n", response.serialize());
+    assertTrue(request.hasParseError());
   }
 
   @Test
@@ -130,8 +128,7 @@ class HttpRequestParserTest {
     HttpRequestParser parser = new HttpRequestParser();
 
     Request request = parser.parse(message);
-    Response response = request.respond(null);
 
-    assertEquals("HTTP/1.1 400 Bad Request\n", response.serialize());
+    assertTrue(request.hasParseError());
   }
 }
