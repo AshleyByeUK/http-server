@@ -15,7 +15,7 @@ class HttpServer {
 
   public static void main(String[] args) {
     initialiseServer()
-        .start(new TcpPort(Integer.valueOf(args[0])));
+        .start(new TcpPort(5000));
   }
 
   private static Server initialiseServer() {
