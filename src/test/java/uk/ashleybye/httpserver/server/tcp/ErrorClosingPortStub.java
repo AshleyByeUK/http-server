@@ -26,6 +26,6 @@ public class ErrorClosingPortStub implements Port {
 
   @Override
   public void close() {
-    throw new ClosingPortException();
+    throw new ClosingPortException(new Exception());
   }
 }

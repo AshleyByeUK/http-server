@@ -8,7 +8,7 @@ public class UnavailablePortStub implements Port {
 
   @Override
   public void listen() {
-    throw new PortUnavailableException();
+    throw new PortUnavailableException(new Exception());
   }
 
   @Override

@@ -21,7 +21,7 @@ public class TcpPort implements Port {
     try {
       serverSocket = new ServerSocket(port);
     } catch (IOException e) {
-      throw new PortUnavailableException();
+      throw new PortUnavailableException(e);
     }
   }
 
@@ -31,7 +31,7 @@ public class TcpPort implements Port {
       Socket socket = serverSocket.accept();
       return new TcpConnection(socket);
     } catch (IOException e) {
-      throw new PortUnavailableException();
+      throw new PortUnavailableException(e);
     }
   }
 
@@ -40,7 +40,7 @@ public class TcpPort implements Port {
     try {
       serverSocket.close();
     } catch (IOException e) {
-      throw new ClosingPortException();
+      throw new ClosingPortException(e);
     }
   }
 }

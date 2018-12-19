@@ -23,7 +23,7 @@ public class TcpConnection implements Connection {
       InputStream inputStream = socket.getInputStream();
       return readAllBytes(inputStream);
     } catch (IOException e) {
-      throw new IncomingConnectionException();
+      throw new IncomingConnectionException(e);
     }
   }
 
@@ -46,7 +46,7 @@ public class TcpConnection implements Connection {
       printWriter.print(data);
       printWriter.close();
     } catch (IOException e) {
-      throw new OutgoingConnectionException();
+      throw new OutgoingConnectionException(e);
     }
   }
 
@@ -55,7 +55,7 @@ public class TcpConnection implements Connection {
     try {
       socket.close();
     } catch (IOException e) {
-      throw new ClosingConnectionException();
+      throw new ClosingConnectionException(e);
     }
   }
 }

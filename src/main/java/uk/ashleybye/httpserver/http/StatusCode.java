@@ -1,85 +1,30 @@
 package uk.ashleybye.httpserver.http;
 
 public enum StatusCode {
-  BAD_REQUEST {
-    @Override
-    public int getStatusCode() {
-      return 400;
-    }
+  OK(200, "OK"),
 
-    @Override
-    public String getStatusMessage() {
-      return "Bad Request";
-    }
-  },
+  MOVED_PERMANENTLY(301, "Moved Permanently"),
 
-  HTTP_VERSION_NOT_SUPPORTED {
-    @Override
-    public int getStatusCode() {
-      return 505;
-    }
+  BAD_REQUEST(400, "Bad Request"),
+  NOT_FOUND(404, "Not Found"),
+  METHOD_NOT_ALLOWED(405, "Method Not Allowed"),
 
-    @Override
-    public String getStatusMessage() {
-      return "HTTP Version Not Supported";
-    }
-  },
+  NOT_IMPLEMENTED(501, "Not Implemented"),
+  HTTP_VERSION_NOT_SUPPORTED(505, "HTTP Version Not Supported");
 
-  METHOD_NOT_ALLOWED {
-    @Override
-    public int getStatusCode() {
-      return 405;
-    }
+  private int code;
+  private String message;
 
-    @Override
-    public String getStatusMessage() {
-      return "Method Not Allowed";
-    }
-  },
+  StatusCode(int code, String message) {
+    this.code = code;
+    this.message = message;
+  }
 
-  MOVED_PERMANENTLY {
-    @Override
-    public int getStatusCode() {
-      return 301;
-    }
+  public int getStatusCode() {
+    return code;
+  }
 
-    @Override
-    public String getStatusMessage() {
-      return "Moved Permanently";
-    }
-  },
-
-  NOT_FOUND {
-    public int getStatusCode() {
-      return 404;
-    }
-
-    public String getStatusMessage() {
-      return "Not Found";
-    }
-  },
-
-  NOT_IMPLEMENTED {
-    public int getStatusCode() {
-      return 501;
-    }
-
-    public String getStatusMessage() {
-      return "Not Implemented";
-    }
-  },
-
-  OK {
-    public int getStatusCode() {
-      return 200;
-    }
-
-    public String getStatusMessage() {
-      return "OK";
-    }
-  };
-
-  public abstract int getStatusCode();
-
-  public abstract String getStatusMessage();
+  public String getStatusMessage() {
+    return message;
+  }
 }
