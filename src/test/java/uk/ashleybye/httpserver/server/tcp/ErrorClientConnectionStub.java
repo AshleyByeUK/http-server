@@ -14,7 +14,7 @@ public class ErrorClientConnectionStub implements Connection {
   @Override
   public String receiveData() {
     if (receiveDataShouldThrowIncomingClientConnectionException) {
-      throw new IncomingConnectionException();
+      throw new IncomingConnectionException(new Exception());
     } else {
       return "GET /simple_get HTTP/1.1";
     }
@@ -23,14 +23,14 @@ public class ErrorClientConnectionStub implements Connection {
   @Override
   public void sendData(String data) {
     if (sendDataShouldThrowOutgoingClientConnectionException) {
-      throw new OutgoingConnectionException();
+      throw new OutgoingConnectionException(new Exception());
     }
   }
 
   @Override
   public void close() {
     if (closeShouldThrowClosingClientConnectionException) {
-      throw new ClosingConnectionException();
+      throw new ClosingConnectionException(new Exception());
     }
   }
 
