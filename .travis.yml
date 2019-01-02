@@ -8,9 +8,11 @@ matrix:
     language: java
     sudo: false
     jdk: openjdk11
-  - os: windows
-    language: c
-    sudo: false
+#    Disable Windows due to ENV var's bug with Travis - ENV var's required for AWS deployment.
+#    See https://travis-ci.community/t/choco-install-hangs-forever/307/6
+#  - os: windows
+#    language: c
+#    sudo: false
 before_script:
   - |
     if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
@@ -34,5 +36,11 @@ script:
   - bundle exec spinach
   - kill %1
   - cd ..
-after_success:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then bash <(curl -s https://codecov.io/bash); fi
+after_success: if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then bash <(curl -s https://codecov.io/bash); fi
+deploy:
+  provider: script
+  skip_cleanup: false
+  script: chmod +x deploy.sh && ./deploy.sh
+  on:
+    branch: master
+    condition: $TRAVIS_OS_NAME = linux
